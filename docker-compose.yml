@@ -1,0 +1,12 @@
+services:
+  nyanta:
+    build: .
+    container_name: nyanta_chat
+    environment:
+      - NODE_ENV=production
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "3001:3000"
+    restart: always
