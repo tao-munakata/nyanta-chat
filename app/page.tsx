@@ -138,7 +138,65 @@ export default function ChatPage() {
   const isComplete = currentIndex >= QUESTIONS.length;
 
   return (
-    <div className="min-h-screen bg-pink-50 flex flex-col max-w-lg mx-auto">
+    <div className="min-h-screen bg-pink-50 flex flex-col max-w-lg mx-auto relative overflow-hidden">
+      {/* 背景猫イラスト */}
+      <div className="fixed bottom-0 right-1/2 translate-x-1/2 max-w-lg w-full pointer-events-none" style={{ zIndex: 0 }}>
+        <svg
+          viewBox="0 0 200 220"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-64 h-64 mx-auto opacity-[0.07]"
+          aria-hidden="true"
+        >
+          {/* 耳（左） */}
+          <polygon points="38,70 58,30 78,70" fill="#f9a8d4" />
+          <polygon points="46,68 58,42 70,68" fill="#fce7f3" />
+          {/* 耳（右） */}
+          <polygon points="122,70 142,30 162,70" fill="#f9a8d4" />
+          <polygon points="130,68 142,42 154,68" fill="#fce7f3" />
+          {/* 頭 */}
+          <ellipse cx="100" cy="95" rx="62" ry="58" fill="#f9a8d4" />
+          {/* 顔 */}
+          <ellipse cx="100" cy="98" rx="54" ry="50" fill="#fce7f3" />
+          {/* 目（左） */}
+          <ellipse cx="80" cy="90" rx="10" ry="12" fill="#4a2c6e" />
+          <ellipse cx="83" cy="87" rx="4" ry="4" fill="white" />
+          <ellipse cx="77" cy="96" rx="2" ry="2" fill="white" />
+          {/* 目（右） */}
+          <ellipse cx="120" cy="90" rx="10" ry="12" fill="#4a2c6e" />
+          <ellipse cx="123" cy="87" rx="4" ry="4" fill="white" />
+          <ellipse cx="117" cy="96" rx="2" ry="2" fill="white" />
+          {/* 鼻 */}
+          <ellipse cx="100" cy="108" rx="5" ry="4" fill="#f472b6" />
+          {/* 口 */}
+          <path d="M94,112 Q100,120 106,112" stroke="#f472b6" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          {/* ひげ（左） */}
+          <line x1="42" y1="106" x2="88" y2="110" stroke="#f9a8d4" strokeWidth="2" />
+          <line x1="42" y1="112" x2="88" y2="112" stroke="#f9a8d4" strokeWidth="2" />
+          <line x1="48" y1="118" x2="88" y2="114" stroke="#f9a8d4" strokeWidth="2" />
+          {/* ひげ（右） */}
+          <line x1="112" y1="110" x2="158" y2="106" stroke="#f9a8d4" strokeWidth="2" />
+          <line x1="112" y1="112" x2="158" y2="112" stroke="#f9a8d4" strokeWidth="2" />
+          <line x1="112" y1="114" x2="152" y2="118" stroke="#f9a8d4" strokeWidth="2" />
+          {/* 胴体 */}
+          <ellipse cx="100" cy="175" rx="52" ry="48" fill="#f9a8d4" />
+          {/* お腹 */}
+          <ellipse cx="100" cy="178" rx="34" ry="34" fill="#fce7f3" />
+          {/* 前脚（左） */}
+          <ellipse cx="62" cy="210" rx="16" ry="12" fill="#f9a8d4" />
+          <ellipse cx="56" cy="216" rx="5" ry="4" fill="#fce7f3" />
+          <ellipse cx="63" cy="219" rx="5" ry="4" fill="#fce7f3" />
+          <ellipse cx="70" cy="216" rx="5" ry="4" fill="#fce7f3" />
+          {/* 前脚（右） */}
+          <ellipse cx="138" cy="210" rx="16" ry="12" fill="#f9a8d4" />
+          <ellipse cx="130" cy="216" rx="5" ry="4" fill="#fce7f3" />
+          <ellipse cx="137" cy="219" rx="5" ry="4" fill="#fce7f3" />
+          <ellipse cx="144" cy="216" rx="5" ry="4" fill="#fce7f3" />
+          {/* しっぽ */}
+          <path d="M148,185 Q185,160 178,130 Q172,115 160,120" stroke="#f9a8d4" strokeWidth="14" fill="none" strokeLinecap="round" />
+          <path d="M148,185 Q185,160 178,130 Q172,115 160,120" stroke="#fce7f3" strokeWidth="7" fill="none" strokeLinecap="round" />
+        </svg>
+      </div>
+
       {/* ヘッダー */}
       <header className="bg-white border-b border-pink-100 px-4 py-3 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-3">
@@ -151,7 +209,7 @@ export default function ChatPage() {
       </header>
 
       {/* チャット履歴 */}
-      <main className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+      <main className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 relative z-10">
         {messages.map((msg, i) => (
           <ChatBubble key={i} role={msg.role} text={msg.text} />
         ))}
@@ -160,7 +218,7 @@ export default function ChatPage() {
 
       {/* 入力エリア */}
       {!isComplete && sessionId && (
-        <footer className="bg-white border-t border-pink-100 shadow-md">
+        <footer className="bg-white border-t border-pink-100 shadow-md relative z-10">
           <InputArea
             question={currentQuestion}
             onSubmit={handleAnswer}
