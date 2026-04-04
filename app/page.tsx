@@ -140,11 +140,11 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col max-w-lg mx-auto relative overflow-hidden">
       {/* 背景猫イラスト */}
-      <div className="fixed bottom-0 right-1/2 translate-x-1/2 max-w-lg w-full pointer-events-none" style={{ zIndex: 0 }}>
+      <div className="absolute bottom-24 right-0 pointer-events-none z-0">
         <svg
           viewBox="0 0 200 220"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-64 h-64 mx-auto opacity-[0.07]"
+          className="w-52 h-52 opacity-20"
           aria-hidden="true"
         >
           {/* 耳（左） */}
