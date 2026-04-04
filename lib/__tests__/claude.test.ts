@@ -38,7 +38,7 @@ describe("claude", () => {
   });
 
   it("JSONパースに失敗した場合はデフォルト値を返す", async () => {
-    const Anthropic = (await import("@anthropic-ai/sdk")).default as ReturnType<typeof vi.fn>;
+    const Anthropic = (await import("@anthropic-ai/sdk")).default as unknown as ReturnType<typeof vi.fn>;
     Anthropic.mockImplementationOnce(() => ({
       messages: {
         create: vi.fn().mockResolvedValue({

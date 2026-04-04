@@ -1,103 +1,177 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import NyantaFace, { type Expression } from "@/components/NyantaFace";
+import ChatBubble from "@/components/ChatBubble";
+import ProgressBar from "@/components/ProgressBar";
+import InputArea from "@/components/InputArea";
+import { QUESTIONS } from "@/lib/questions";
+
+type Message = {
+  role: "nyanta" | "user";
+  text: string;
+};
+
+const WELCOME_MESSAGE =
+  "こんにゃちはにゃん！🐾 今日はおうちでお医者さんに来てもらうお話にゃ？\n緊張してるかもだけど、にゃん太が一緒に優しく聞くにゃ♡\n一緒に答えていこっか！";
+
+export default function ChatPage() {
+  const router = useRouter();
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "nyanta", text: WELCOME_MESSAGE },
+  ]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [expression, setExpression] = useState<Expression>("welcome");
+  const [disabled, setDisabled] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // セッション初期化
+  useEffect(() => {
+    fetch("/nyanta/api/session", { method: "POST" })
+      .then((r) => r.json())
+      .then((data: { sessionId: string }) => {
+        setSessionId(data.sessionId);
+        // 少し待ってから最初の質問を表示
+        setTimeout(() => {
+          setMessages((prev) => [
+            ...prev,
+            { role: "nyanta", text: QUESTIONS[0].text },
+          ]);
+        }, 800);
+      });
+  }, []);
+
+  // メッセージ追加時に最下部へスクロール
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleAnswer = async (answer: string) => {
+    if (!sessionId) return;
+    const question = QUESTIONS[currentIndex];
+
+    // ユーザー回答をチャットに追加
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", text: answer === "" ? "（スキップ）" : answer },
+    ]);
+    setDisabled(true);
+    setExpression("thinking");
+
+    // 回答を保存（スキップ時は空文字を保存）
+    await fetch("/nyanta/api/session", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "save_answer",
+        sessionId,
+        questionId: question.id,
+        answer,
+      }),
+    });
+
+    // Claudeにリアクションを生成させる（スキップ時は固定リアクション）
+    let reaction = "にゃるほどにゃ〜♡ ありがとうにゃん！";
+    let nextExpression: Expression = "happy";
+
+    if (answer !== "") {
+      const res = await fetch("/nyanta/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionText: question.text,
+          userAnswer: answer,
+        }),
+      });
+      const data = await res.json() as { reaction: string; expression: Expression };
+      reaction = data.reaction;
+      nextExpression = data.expression;
+    }
+
+    const nextIndex = currentIndex + 1;
+    const isLast = nextIndex >= QUESTIONS.length;
+
+    // リアクションを表示
+    setMessages((prev) => [...prev, { role: "nyanta", text: reaction }]);
+    setExpression(nextExpression);
+
+    if (isLast) {
+      // 完了処理
+      await fetch("/nyanta/api/session", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "complete", sessionId }),
+      });
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "nyanta",
+            text: "全部答えてくれてありがとうにゃ♡ これでお医者さんがスムーズに来られるにゃ〜！🐾 まとめを見てにゃん！",
+          },
+        ]);
+        setExpression("encouraging");
+      }, 500);
+      setTimeout(() => {
+        // basePath('/nyanta')はNext.js routerが自動付与するため不要
+        router.push(`/complete?session=${sessionId}`);
+      }, 3000);
+    } else {
+      // 次の質問を表示
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          { role: "nyanta", text: QUESTIONS[nextIndex].text },
+        ]);
+        setCurrentIndex(nextIndex);
+        setExpression("welcome");
+        setDisabled(false);
+      }, 600);
+    }
+  };
+
+  const handleSkip = () => handleAnswer("");
+
+  const currentQuestion = QUESTIONS[currentIndex];
+  const isComplete = currentIndex >= QUESTIONS.length;
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-pink-50 flex flex-col max-w-lg mx-auto">
+      {/* ヘッダー */}
+      <header className="bg-white border-b border-pink-100 px-4 py-3 sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center gap-3">
+          <NyantaFace expression={expression} size={48} />
+          <div className="flex-1">
+            <h1 className="text-base font-bold text-pink-600">にゃん太先生の問診室</h1>
+            <ProgressBar current={currentIndex} total={QUESTIONS.length} />
+          </div>
         </div>
+      </header>
+
+      {/* チャット履歴 */}
+      <main className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+        {messages.map((msg, i) => (
+          <ChatBubble key={i} role={msg.role} text={msg.text} />
+        ))}
+        <div ref={bottomRef} />
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+      {/* 入力エリア */}
+      {!isComplete && sessionId && (
+        <footer className="bg-white border-t border-pink-100 shadow-md">
+          <InputArea
+            question={currentQuestion}
+            onSubmit={handleAnswer}
+            onSkip={handleSkip}
+            disabled={disabled}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <p className="text-center text-xs text-slate-400 pb-3 px-4">
+            ※ これはにゃん太先生のお手伝いにゃ。本当の診断は訪問のお医者さんにお任せしてね！
+          </p>
+        </footer>
+      )}
     </div>
   );
 }
