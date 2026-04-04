@@ -11,6 +11,7 @@ import { QUESTIONS } from "@/lib/questions";
 type Message = {
   role: "nyanta" | "user";
   text: string;
+  expression?: Expression;
 };
 
 const WELCOME_MESSAGE =
@@ -20,7 +21,7 @@ export default function ChatPage() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "nyanta", text: WELCOME_MESSAGE },
+    { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
   ]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expression, setExpression] = useState<Expression>("welcome");
@@ -37,7 +38,7 @@ export default function ChatPage() {
         setTimeout(() => {
           setMessages((prev) => [
             ...prev,
-            { role: "nyanta", text: QUESTIONS[0].text },
+            { role: "nyanta", text: QUESTIONS[0].text, expression: "welcome" },
           ]);
         }, 800);
       });
@@ -94,7 +95,7 @@ export default function ChatPage() {
     const isLast = nextIndex >= QUESTIONS.length;
 
     // リアクションを表示
-    setMessages((prev) => [...prev, { role: "nyanta", text: reaction }]);
+    setMessages((prev) => [...prev, { role: "nyanta", text: reaction, expression: nextExpression }]);
     setExpression(nextExpression);
 
     if (isLast) {
@@ -110,6 +111,7 @@ export default function ChatPage() {
           {
             role: "nyanta",
             text: "全部答えてくれてありがとうにゃ♡ これでお医者さんがスムーズに来られるにゃ〜！🐾 まとめを見てにゃん！",
+            expression: "encouraging",
           },
         ]);
         setExpression("encouraging");
@@ -123,7 +125,7 @@ export default function ChatPage() {
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
-          { role: "nyanta", text: QUESTIONS[nextIndex].text },
+          { role: "nyanta", text: QUESTIONS[nextIndex].text, expression: "welcome" },
         ]);
         setCurrentIndex(nextIndex);
         setExpression("welcome");
@@ -211,7 +213,7 @@ export default function ChatPage() {
       {/* チャット履歴 */}
       <main className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 relative z-10">
         {messages.map((msg, i) => (
-          <ChatBubble key={i} role={msg.role} text={msg.text} />
+          <ChatBubble key={i} role={msg.role} text={msg.text} expression={msg.expression} />
         ))}
         <div ref={bottomRef} />
       </main>
