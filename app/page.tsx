@@ -140,7 +140,7 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col max-w-lg mx-auto relative overflow-hidden">
       {/* 背景猫イラスト */}
-      <div className="absolute bottom-24 right-0 pointer-events-none z-0">
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-0">
         <svg
           viewBox="0 0 200 220"
           xmlns="http://www.w3.org/2000/svg"
