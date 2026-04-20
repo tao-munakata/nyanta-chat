@@ -1,6 +1,7 @@
 import "server-only";
 import Database from "better-sqlite3";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
 import path from "path";
 
 const DB_PATH =
@@ -10,6 +11,7 @@ let _db: Database.Database | null = null;
 
 function getDb(): Database.Database {
   if (!_db) {
+    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
     _db = new Database(DB_PATH);
     _db.pragma("journal_mode = WAL");
     _db.exec(`
