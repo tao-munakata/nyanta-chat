@@ -9,6 +9,7 @@ type Props = {
   onSkip: () => void;
   onBack?: () => void;
   canGoBack?: boolean;
+  remainingCount: number;
   disabled: boolean;
 };
 
@@ -18,6 +19,7 @@ export default function InputArea({
   onSkip,
   onBack,
   canGoBack = false,
+  remainingCount,
   disabled,
 }: Props) {
   const [text, setText] = useState("");
@@ -49,15 +51,22 @@ export default function InputArea({
   if (question.type === "select") {
     return (
       <div className="flex flex-col gap-3 p-4">
-        {canGoBack && (
-          <button
-            onClick={onBack}
-            disabled={disabled}
-            className="self-start text-slate-500 text-sm font-medium disabled:opacity-50"
-          >
-            ← 戻る
-          </button>
-        )}
+        <div className="flex min-h-6 items-center justify-between">
+          {canGoBack ? (
+            <button
+              onClick={onBack}
+              disabled={disabled}
+              className="text-slate-500 text-sm font-medium disabled:opacity-50"
+            >
+              ← 戻る
+            </button>
+          ) : (
+            <span />
+          )}
+          <span className="text-xs font-semibold text-pink-500">
+            残り{remainingCount}問
+          </span>
+        </div>
         <div className="flex flex-col gap-2">
           {question.options!.map((opt) => (
             <button
@@ -86,15 +95,22 @@ export default function InputArea({
   if (question.type === "photo") {
     return (
       <div className="flex flex-col gap-3 p-4">
-        {canGoBack && (
-          <button
-            onClick={onBack}
-            disabled={disabled}
-            className="self-start text-slate-500 text-sm font-medium disabled:opacity-50"
-          >
-            ← 戻る
-          </button>
-        )}
+        <div className="flex min-h-6 items-center justify-between">
+          {canGoBack ? (
+            <button
+              onClick={onBack}
+              disabled={disabled}
+              className="text-slate-500 text-sm font-medium disabled:opacity-50"
+            >
+              ← 戻る
+            </button>
+          ) : (
+            <span />
+          )}
+          <span className="text-xs font-semibold text-pink-500">
+            残り{remainingCount}問
+          </span>
+        </div>
         {preview ? (
           <img src={preview} alt="プレビュー" className="max-h-40 rounded-lg object-contain border" />
         ) : (
@@ -130,15 +146,22 @@ export default function InputArea({
   // text / date
   return (
     <div className="flex flex-col gap-3 p-4">
-      {canGoBack && (
-        <button
-          onClick={onBack}
-          disabled={disabled}
-          className="self-start text-slate-500 text-sm font-medium disabled:opacity-50"
-        >
-          ← 戻る
-        </button>
-      )}
+      <div className="flex min-h-6 items-center justify-between">
+        {canGoBack ? (
+          <button
+            onClick={onBack}
+            disabled={disabled}
+            className="text-slate-500 text-sm font-medium disabled:opacity-50"
+          >
+            ← 戻る
+          </button>
+        ) : (
+          <span />
+        )}
+        <span className="text-xs font-semibold text-pink-500">
+          残り{remainingCount}問
+        </span>
+      </div>
       {question.type === "date" ? (
         <input
           type="date"

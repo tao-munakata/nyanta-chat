@@ -236,6 +236,7 @@ export default function ChatPage() {
             onSkip={handleSkip}
             onBack={handleBack}
             canGoBack={currentIndex > 0}
+            remainingCount={QUESTIONS.length - currentIndex}
             disabled={disabled}
           />
           <p className="text-center text-xs text-slate-400 pb-3 px-4">
