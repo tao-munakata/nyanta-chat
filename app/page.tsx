@@ -81,6 +81,45 @@ function validatePhoneNumber(answer: string): string | null {
   return null;
 }
 
+function validateBirthDate(answer: string): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(answer)) {
+    return "生年月日は正しい日付で入力してにゃ";
+  }
+
+  const [year, month, day] = answer.split("-").map(Number);
+  const birthDate = new Date(year, month - 1, day);
+
+  if (
+    birthDate.getFullYear() !== year ||
+    birthDate.getMonth() !== month - 1 ||
+    birthDate.getDate() !== day
+  ) {
+    return "存在しない日付は入力できないにゃ";
+  }
+
+  const today = new Date();
+  const todayDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+  const oldestAllowedDate = new Date(
+    todayDate.getFullYear() - 120,
+    todayDate.getMonth(),
+    todayDate.getDate()
+  );
+
+  if (birthDate > todayDate) {
+    return "未来の日付は生年月日にできないにゃ";
+  }
+
+  if (birthDate < oldestAllowedDate) {
+    return "生年月日は120歳以内の日付で入力してにゃ";
+  }
+
+  return null;
+}
+
 export default function ChatPage() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -123,6 +162,15 @@ export default function ChatPage() {
     if (!sessionId) return false;
     const question = QUESTIONS[currentIndex];
     setInputError(null);
+
+    if (question.id === "basic-dob") {
+      const birthDateError = validateBirthDate(answer);
+      if (birthDateError) {
+        setInputError(birthDateError);
+        setExpression("serious");
+        return false;
+      }
+    }
 
     if (question.id === "basic-phone") {
       const phoneError = validatePhoneNumber(answer);

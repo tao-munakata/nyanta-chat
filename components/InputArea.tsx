@@ -14,6 +14,11 @@ type Props = {
   disabled: boolean;
 };
 
+const formatDateInputValue = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`;
+
 export default function InputArea({
   question,
   onSubmit,
@@ -27,6 +32,11 @@ export default function InputArea({
   const [text, setText] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const today = new Date();
+  const maxBirthDate = formatDateInputValue(today);
+  const minBirthDate = formatDateInputValue(
+    new Date(today.getFullYear() - 120, today.getMonth(), today.getDate())
+  );
 
   const handleSubmit = async () => {
     if (question.type === "photo") {
@@ -175,6 +185,8 @@ export default function InputArea({
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={disabled}
+          min={question.id === "basic-dob" ? minBirthDate : undefined}
+          max={question.id === "basic-dob" ? maxBirthDate : undefined}
           className="w-full border-2 border-pink-200 rounded-xl px-4 py-3 text-base text-slate-700 focus:outline-none focus:border-pink-400 disabled:opacity-50"
         />
       ) : (
