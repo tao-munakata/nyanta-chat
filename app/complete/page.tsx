@@ -18,7 +18,7 @@ export default async function CompletePage({ searchParams }: Props) {
     <div className="min-h-screen bg-pink-50 max-w-lg mx-auto">
       {/* ヘッダー */}
       <header className="bg-white border-b border-pink-100 px-4 py-4 text-center">
-        <NyantaFace expression="encouraging" size={64} />
+        <NyantaFace expression="encouraging" version="cream" size={64} />
         <h1 className="text-xl font-bold text-pink-600 mt-2">
           問診完了にゃ♡
         </h1>

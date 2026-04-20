@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import NyantaFace, { type Expression } from "@/components/NyantaFace";
+import NyantaFace, {
+  type CharacterVersion,
+  type Expression,
+} from "@/components/NyantaFace";
 import ChatBubble from "@/components/ChatBubble";
 import ProgressBar from "@/components/ProgressBar";
 import InputArea from "@/components/InputArea";
@@ -12,10 +15,71 @@ type Message = {
   role: "nyanta" | "user";
   text: string;
   expression?: Expression;
+  version?: CharacterVersion;
 };
 
 const WELCOME_MESSAGE =
   "こんにゃちはにゃん！🐾 今日はおうちでお医者さんに来てもらうお話にゃ？\n緊張してるかもだけど、にゃん太が一緒に優しく聞くにゃ♡\n一緒に答えていこっか！";
+
+const CHARACTER_BY_CATEGORY: Record<string, CharacterVersion> = {
+  basic: "doctor",
+  symptoms: "pink",
+  history: "gray",
+  medication: "calico",
+  adl: "tabby",
+  home: "brown",
+  wishes: "cream",
+};
+
+const getCharacterVersion = (questionIndex: number): CharacterVersion =>
+  CHARACTER_BY_CATEGORY[QUESTIONS[questionIndex]?.category] ?? "doctor";
+
+function validatePhoneNumber(answer: string): string | null {
+  const normalized = answer
+    .replace(/[０-９]/g, (char) =>
+      String.fromCharCode(char.charCodeAt(0) - 0xfee0)
+    )
+    .replace(/[‐‑‒–—ー−]/g, "-")
+    .trim();
+
+  if (/[^0-9\s\-()（）]/.test(normalized)) {
+    return "電話番号は数字、ハイフン、空白、括弧だけで入力してにゃ";
+  }
+
+  const digits = normalized.replace(/\D/g, "");
+
+  if (digits.length !== 10 && digits.length !== 11) {
+    return "電話番号は数字だけで10桁または11桁にしてにゃ";
+  }
+
+  if (!digits.startsWith("0")) {
+    return "日本の電話番号は通常0から始まる番号を入力してにゃ";
+  }
+
+  if (/^(\d)\1+$/.test(digits) || /^0(\d)\1+$/.test(digits)) {
+    return "同じ数字だけの番号は使えないにゃ";
+  }
+
+  const dummyNumbers = new Set([
+    "0000000000",
+    "00000000000",
+    "0123456789",
+    "01234567890",
+    "09012345678",
+    "08012345678",
+    "07012345678",
+  ]);
+
+  if (
+    dummyNumbers.has(digits) ||
+    "01234567890123456789".includes(digits) ||
+    "98765432109876543210".includes(digits)
+  ) {
+    return "連番やテスト用のような番号は使えないにゃ";
+  }
+
+  return null;
+}
 
 export default function ChatPage() {
   const router = useRouter();
@@ -26,6 +90,7 @@ export default function ChatPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expression, setExpression] = useState<Expression>("welcome");
   const [disabled, setDisabled] = useState(false);
+  const [inputError, setInputError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // セッション初期化
@@ -38,7 +103,12 @@ export default function ChatPage() {
         setTimeout(() => {
           setMessages((prev) => [
             ...prev,
-            { role: "nyanta", text: QUESTIONS[0].text, expression: "welcome" },
+            {
+              role: "nyanta",
+              text: QUESTIONS[0].text,
+              expression: "welcome",
+              version: getCharacterVersion(0),
+            },
           ]);
         }, 800);
       });
@@ -49,9 +119,19 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleAnswer = async (answer: string) => {
-    if (!sessionId) return;
+  const handleAnswer = async (answer: string): Promise<boolean> => {
+    if (!sessionId) return false;
     const question = QUESTIONS[currentIndex];
+    setInputError(null);
+
+    if (question.id === "basic-phone") {
+      const phoneError = validatePhoneNumber(answer);
+      if (phoneError) {
+        setInputError(phoneError);
+        setExpression("serious");
+        return false;
+      }
+    }
 
     // ユーザー回答をチャットに追加
     setMessages((prev) => [
@@ -95,7 +175,15 @@ export default function ChatPage() {
     const isLast = nextIndex >= QUESTIONS.length;
 
     // リアクションを表示
-    setMessages((prev) => [...prev, { role: "nyanta", text: reaction, expression: nextExpression }]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "nyanta",
+        text: reaction,
+        expression: nextExpression,
+        version: getCharacterVersion(currentIndex),
+      },
+    ]);
     setExpression(nextExpression);
 
     if (isLast) {
@@ -112,6 +200,7 @@ export default function ChatPage() {
             role: "nyanta",
             text: "全部答えてくれてありがとうにゃ♡ これでお医者さんがスムーズに来られるにゃ〜！🐾 まとめを見てにゃん！",
             expression: "encouraging",
+            version: "cream",
           },
         ]);
         setExpression("encouraging");
@@ -125,13 +214,21 @@ export default function ChatPage() {
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
-          { role: "nyanta", text: QUESTIONS[nextIndex].text, expression: "welcome" },
+          {
+            role: "nyanta",
+            text: QUESTIONS[nextIndex].text,
+            expression: "welcome",
+            version: getCharacterVersion(nextIndex),
+          },
         ]);
         setCurrentIndex(nextIndex);
         setExpression("welcome");
+        setInputError(null);
         setDisabled(false);
       }, 600);
     }
+
+    return true;
   };
 
   const handleSkip = () => handleAnswer("");
@@ -141,10 +238,12 @@ export default function ChatPage() {
 
     setMessages((prev) => prev.slice(0, Math.max(2, prev.length - 3)));
     setCurrentIndex((prev) => prev - 1);
+    setInputError(null);
     setExpression("welcome");
   };
 
   const currentQuestion = QUESTIONS[currentIndex];
+  const currentCharacterVersion = getCharacterVersion(currentIndex);
   const isComplete = currentIndex >= QUESTIONS.length;
 
   return (
@@ -210,7 +309,11 @@ export default function ChatPage() {
       {/* ヘッダー */}
       <header className="bg-white border-b border-pink-100 px-4 py-3 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-3">
-          <NyantaFace expression={expression} size={48} />
+          <NyantaFace
+            expression={expression}
+            version={currentCharacterVersion}
+            size={48}
+          />
           <div className="flex-1">
             <h1 className="text-base font-bold text-pink-600">にゃん太先生の問診室</h1>
             <ProgressBar current={currentIndex} total={QUESTIONS.length} />
@@ -221,7 +324,13 @@ export default function ChatPage() {
       {/* チャット履歴 */}
       <main className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 relative z-10">
         {messages.map((msg, i) => (
-          <ChatBubble key={i} role={msg.role} text={msg.text} expression={msg.expression} />
+          <ChatBubble
+            key={i}
+            role={msg.role}
+            text={msg.text}
+            expression={msg.expression}
+            version={msg.version}
+          />
         ))}
         <div ref={bottomRef} />
       </main>
@@ -237,6 +346,7 @@ export default function ChatPage() {
             onBack={handleBack}
             canGoBack={currentIndex > 0}
             remainingCount={QUESTIONS.length - currentIndex}
+            errorMessage={inputError}
             disabled={disabled}
           />
           <p className="text-center text-xs text-slate-400 pb-3 px-4">

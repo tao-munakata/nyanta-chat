@@ -5,11 +5,12 @@ import type { Question } from "@/lib/questions";
 
 type Props = {
   question: Question;
-  onSubmit: (answer: string) => void;
+  onSubmit: (answer: string) => boolean | Promise<boolean>;
   onSkip: () => void;
   onBack?: () => void;
   canGoBack?: boolean;
   remainingCount: number;
+  errorMessage?: string | null;
   disabled: boolean;
 };
 
@@ -20,20 +21,24 @@ export default function InputArea({
   onBack,
   canGoBack = false,
   remainingCount,
+  errorMessage,
   disabled,
 }: Props) {
   const [text, setText] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (question.type === "photo") {
-      if (preview) onSubmit(preview);
+      if (preview) {
+        const accepted = await onSubmit(preview);
+        if (accepted !== false) setPreview(null);
+      }
       return;
     }
     if (text.trim()) {
-      onSubmit(text.trim());
-      setText("");
+      const accepted = await onSubmit(text.trim());
+      if (accepted !== false) setText("");
     }
   };
 
@@ -72,7 +77,9 @@ export default function InputArea({
             <button
               key={opt}
               disabled={disabled}
-              onClick={() => onSubmit(opt)}
+              onClick={() => {
+                void onSubmit(opt);
+              }}
               className="min-h-[60px] bg-white border-2 border-pink-200 rounded-xl px-4 py-3 text-slate-700 text-base font-medium hover:bg-pink-50 hover:border-pink-400 active:bg-pink-100 disabled:opacity-50 transition-colors text-left"
             >
               {opt}
@@ -181,10 +188,15 @@ export default function InputArea({
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              handleSubmit();
+              void handleSubmit();
             }
           }}
         />
+      )}
+      {errorMessage && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600">
+          {errorMessage}
+        </p>
       )}
       <div className="flex gap-2 items-center">
         {question.skippable && (

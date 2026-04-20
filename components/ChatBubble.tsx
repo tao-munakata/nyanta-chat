@@ -1,18 +1,27 @@
-import NyantaFace, { type Expression } from "@/components/NyantaFace";
+import NyantaFace, {
+  type CharacterVersion,
+  type Expression,
+} from "@/components/NyantaFace";
 
 type Props = {
   role: "nyanta" | "user";
   text: string;
   expression?: Expression;
+  version?: CharacterVersion;
 };
 
-export default function ChatBubble({ role, text, expression = "welcome" }: Props) {
+export default function ChatBubble({
+  role,
+  text,
+  expression = "welcome",
+  version = "doctor",
+}: Props) {
   if (role === "nyanta") {
     return (
       <div className="flex items-end gap-3 max-w-[90%]">
         {/* 猫イラスト */}
         <div className="flex-shrink-0 drop-shadow-sm">
-          <NyantaFace expression={expression} size={64} />
+          <NyantaFace expression={expression} version={version} size={64} />
         </div>
         {/* 吹き出し */}
         <div className="relative bg-white border border-pink-200 rounded-2xl rounded-bl-sm px-4 py-3 text-slate-700 text-base leading-relaxed shadow-sm">
