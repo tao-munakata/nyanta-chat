@@ -45,6 +45,24 @@ docker compose up -d --build
 docker compose logs -f
 ```
 
+## デモ配布パッケージで渡す場合
+
+開発マシンで配布用の圧縮ファイルを作成します。
+
+```bash
+./scripts/make-demo-package.sh
+```
+
+サーバ側では圧縮ファイルを展開し、同梱の `DEMO_SETUP.md` に従って起動します。
+
+```bash
+tar xzf nyanta-chat-demo-*.tar.gz
+cd nyanta-chat
+cp .env.example .env
+mkdir -p data
+docker compose up -d --build
+```
+
 ## 停止
 
 ```bash

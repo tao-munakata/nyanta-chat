@@ -20,6 +20,10 @@
 - 回答まとめ画面
 - 1つ前の質問へ戻るボタン
 - 保存用ボタン
+- 残り質問数の表示
+- 電話番号・生年月日の入力チェック
+- 質問カテゴリごとの猫キャラクター切り替え
+- 猫キャラクターのまばたき・口パクアニメーション
 
 ## 開発環境の役割
 
@@ -95,6 +99,22 @@ docker compose down
 ```text
 http://localhost:3001/nyanta
 ```
+
+## デモ配布パッケージ
+
+Gitを使わずに友人や検証用サーバへ渡す場合は、配布用の圧縮ファイルを作れます。
+
+```bash
+./scripts/make-demo-package.sh
+```
+
+生成先:
+
+```text
+dist/nyanta-chat-demo-YYYYMMDD-HHMM.tar.gz
+```
+
+配布先では、圧縮ファイルを展開して `DEMO_SETUP.md` の手順で起動します。
 
 ## VPSデプロイ
 
