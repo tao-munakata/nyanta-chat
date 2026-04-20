@@ -136,6 +136,14 @@ export default function ChatPage() {
 
   const handleSkip = () => handleAnswer("");
 
+  const handleBack = () => {
+    if (disabled || currentIndex === 0) return;
+
+    setMessages((prev) => prev.slice(0, Math.max(2, prev.length - 3)));
+    setCurrentIndex((prev) => prev - 1);
+    setExpression("welcome");
+  };
+
   const currentQuestion = QUESTIONS[currentIndex];
   const isComplete = currentIndex >= QUESTIONS.length;
 
@@ -222,9 +230,12 @@ export default function ChatPage() {
       {!isComplete && sessionId && (
         <footer className="bg-white border-t border-pink-100 shadow-md relative z-10">
           <InputArea
+            key={currentQuestion.id}
             question={currentQuestion}
             onSubmit={handleAnswer}
             onSkip={handleSkip}
+            onBack={handleBack}
+            canGoBack={currentIndex > 0}
             disabled={disabled}
           />
           <p className="text-center text-xs text-slate-400 pb-3 px-4">

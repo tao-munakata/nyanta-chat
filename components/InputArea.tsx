@@ -7,10 +7,19 @@ type Props = {
   question: Question;
   onSubmit: (answer: string) => void;
   onSkip: () => void;
+  onBack?: () => void;
+  canGoBack?: boolean;
   disabled: boolean;
 };
 
-export default function InputArea({ question, onSubmit, onSkip, disabled }: Props) {
+export default function InputArea({
+  question,
+  onSubmit,
+  onSkip,
+  onBack,
+  canGoBack = false,
+  disabled,
+}: Props) {
   const [text, setText] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -40,6 +49,15 @@ export default function InputArea({ question, onSubmit, onSkip, disabled }: Prop
   if (question.type === "select") {
     return (
       <div className="flex flex-col gap-3 p-4">
+        {canGoBack && (
+          <button
+            onClick={onBack}
+            disabled={disabled}
+            className="self-start text-slate-500 text-sm font-medium disabled:opacity-50"
+          >
+            ← 戻る
+          </button>
+        )}
         <div className="flex flex-col gap-2">
           {question.options!.map((opt) => (
             <button
@@ -68,6 +86,15 @@ export default function InputArea({ question, onSubmit, onSkip, disabled }: Prop
   if (question.type === "photo") {
     return (
       <div className="flex flex-col gap-3 p-4">
+        {canGoBack && (
+          <button
+            onClick={onBack}
+            disabled={disabled}
+            className="self-start text-slate-500 text-sm font-medium disabled:opacity-50"
+          >
+            ← 戻る
+          </button>
+        )}
         {preview ? (
           <img src={preview} alt="プレビュー" className="max-h-40 rounded-lg object-contain border" />
         ) : (
@@ -103,6 +130,15 @@ export default function InputArea({ question, onSubmit, onSkip, disabled }: Prop
   // text / date
   return (
     <div className="flex flex-col gap-3 p-4">
+      {canGoBack && (
+        <button
+          onClick={onBack}
+          disabled={disabled}
+          className="self-start text-slate-500 text-sm font-medium disabled:opacity-50"
+        >
+          ← 戻る
+        </button>
+      )}
       {question.type === "date" ? (
         <input
           type="date"
