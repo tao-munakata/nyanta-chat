@@ -21,7 +21,12 @@ export default function ChatBubble({
       <div className="flex items-end gap-3 max-w-[90%]">
         {/* 猫イラスト */}
         <div className="flex-shrink-0 drop-shadow-sm">
-          <NyantaFace expression={expression} version={version} size={64} />
+          <NyantaFace
+            expression={expression}
+            version={version}
+            size={64}
+            speaking
+          />
         </div>
         {/* 吹き出し */}
         <div className="relative bg-white border border-pink-200 rounded-2xl rounded-bl-sm px-4 py-3 text-slate-700 text-base leading-relaxed shadow-sm">

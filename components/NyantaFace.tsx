@@ -21,6 +21,8 @@ type Props = {
   expression: Expression;
   size?: number;
   version?: CharacterVersion;
+  animate?: boolean;
+  speaking?: boolean;
 };
 
 // 各表情の目・口パーツ定義
@@ -134,6 +136,8 @@ export default function NyantaFace({
   expression,
   size = 80,
   version = "doctor",
+  animate = true,
+  speaking = false,
 }: Props) {
   const face = FACES[expression];
   const style = VERSIONS[version];
@@ -152,6 +156,7 @@ export default function NyantaFace({
       viewBox="0 0 88 88"
       xmlns="http://www.w3.org/2000/svg"
       aria-label={`にゃん太先生 ${expression}`}
+      className={animate ? "nyanta-face" : undefined}
     >
       {/* 白衣の体 */}
       <rect x="22" y="68" width="44" height="16" rx="8" fill="white" stroke="#ddd" strokeWidth="1.5" />
@@ -220,9 +225,21 @@ export default function NyantaFace({
       {face.eyebrows && (
         <path d={face.eyebrows} {...strokeProps} strokeWidth={2} />
       )}
-      <path d={face.leftEye} {...strokeProps} />
-      <path d={face.rightEye} {...strokeProps} />
-      <path d={face.mouth} {...strokeProps} />
+      <path
+        className={animate ? "nyanta-eye nyanta-eye-left" : undefined}
+        d={face.leftEye}
+        {...strokeProps}
+      />
+      <path
+        className={animate ? "nyanta-eye nyanta-eye-right" : undefined}
+        d={face.rightEye}
+        {...strokeProps}
+      />
+      <path
+        className={speaking ? "nyanta-mouth nyanta-mouth-speaking" : "nyanta-mouth"}
+        d={face.mouth}
+        {...strokeProps}
+      />
       {/* thinking: 考え中の点点点 */}
       {expression === "thinking" && (
         <>
