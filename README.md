@@ -170,5 +170,6 @@ git log --oneline --decorate -n 20
 - `docs/deployment.md`: デプロイ手順
 - `docs/changelog.md`: 変更履歴
 - `docs/feature-ideas.md`: 今後の機能案
+- `notion-export/`: Notionインポート用Markdown
 
 NotebookLMにはREADMEと `docs/` 配下を読み込ませる運用を想定しています。
