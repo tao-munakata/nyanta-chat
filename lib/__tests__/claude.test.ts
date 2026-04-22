@@ -33,7 +33,10 @@ describe("claude", () => {
       "happy",
       "surprised",
       "serious",
+      "thinking",
       "encouraging",
+      "worried",
+      "relieved",
     ]).toContain(result.expression);
   });
 

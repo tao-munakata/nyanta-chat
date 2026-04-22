@@ -6,7 +6,10 @@ export type ClaudeExpression =
   | "happy"
   | "surprised"
   | "serious"
-  | "encouraging";
+  | "thinking"
+  | "encouraging"
+  | "worried"
+  | "relieved";
 
 export type ReactionResult = {
   reaction: string;
@@ -28,7 +31,10 @@ const SYSTEM_PROMPT = `あなたは「にゃん太先生」です。白衣と聴
 - "happy": 情報を教えてもらえた嬉しい反応
 - "surprised": 重要な情報（病名・手術・アレルギーなど）を聞いた時
 - "serious": 症状・痛み・緊急性の高い内容を聞いた時
-- "encouraging": 最後の質問・困難そうな状況に励ます時`;
+- "thinking": ユーザーが「わからない」「不明」など迷っている時
+- "encouraging": 最後の質問・困難そうな状況に励ます時
+- "worried": 不安・心配・困りごとが強い時
+- "relieved": 問題なし・痛みなし・できる等、安心できる回答の時`;
 
 let client: Anthropic | null = null;
 
@@ -65,7 +71,10 @@ export async function generateReaction(
       "happy",
       "surprised",
       "serious",
+      "thinking",
       "encouraging",
+      "worried",
+      "relieved",
     ];
     const expression: ClaudeExpression = validExpressions.includes(
       parsed.expression

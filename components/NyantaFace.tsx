@@ -6,7 +6,9 @@ export type Expression =
   | "surprised"
   | "serious"
   | "thinking"
-  | "encouraging";
+  | "encouraging"
+  | "worried"
+  | "relieved";
 
 export type CharacterVersion =
   | "doctor"
@@ -60,6 +62,17 @@ const FACES: Record<
     leftEye: "M 27,36 Q 32,28 37,36",
     rightEye: "M 51,36 Q 56,28 61,36",
     mouth: "M 32,50 Q 44,64 56,50",
+  },
+  worried: {
+    leftEye: "M 28,40 Q 32,36 36,40",
+    rightEye: "M 52,40 Q 56,36 60,40",
+    mouth: "M 36,56 Q 44,50 52,56",
+    eyebrows: "M 28,31 L 36,34 M 52,34 L 60,31",
+  },
+  relieved: {
+    leftEye: "M 28,38 Q 32,42 36,38",
+    rightEye: "M 52,38 Q 56,42 60,38",
+    mouth: "M 34,52 Q 44,59 54,52",
   },
 };
 
@@ -247,6 +260,9 @@ export default function NyantaFace({
           <circle cx="44" cy="66" r="2" fill="#aaa" />
           <circle cx="52" cy="64" r="2" fill="#aaa" />
         </>
+      )}
+      {expression === "worried" && (
+        <path d="M 62,58 Q 68,64 62,70 Q 56,64 62,58" fill="#93c5fd" opacity="0.9" />
       )}
     </svg>
   );
