@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSessionAnswers } from "@/lib/db";
 import { QUESTIONS, CATEGORIES } from "@/lib/questions";
+import { buildImportantPoints } from "@/lib/summary";
 import { APP_VERSION } from "@/lib/version";
 import NyantaFace from "@/components/NyantaFace";
 import PrintButton from "@/components/PrintButton";
@@ -14,6 +15,12 @@ export default async function CompletePage({ searchParams }: Props) {
   const answerMap = Object.fromEntries(
     rawAnswers.map((a) => [a.question_id, a.answer])
   );
+  const importantPoints = buildImportantPoints(answerMap);
+  const toneClass = {
+    urgent: "border-red-200 bg-red-50 text-red-600",
+    caution: "border-amber-200 bg-amber-50 text-amber-600",
+    info: "border-sky-200 bg-sky-50 text-sky-600",
+  };
 
   return (
     <div className="min-h-screen bg-pink-50 max-w-lg mx-auto">
@@ -33,6 +40,31 @@ export default async function CompletePage({ searchParams }: Props) {
 
       {/* 回答まとめ */}
       <main className="p-4 flex flex-col gap-4">
+        {importantPoints.length > 0 && (
+          <section className="bg-white rounded-2xl shadow-sm p-4 border-2 border-pink-100">
+            <h2 className="text-sm font-bold text-pink-600 mb-1">
+              重要ポイントまとめ
+            </h2>
+            <p className="text-xs text-slate-400 mb-3">
+              診察前に確認してほしい回答を自動でまとめたにゃ
+            </p>
+            <div className="flex flex-col gap-3">
+              {importantPoints.map((point) => (
+                <div
+                  key={point.id}
+                  className={`rounded-xl border px-3 py-2 ${toneClass[point.tone]}`}
+                >
+                  <div className="text-xs font-bold">{point.label}</div>
+                  <p className="mt-1 text-xs text-slate-500">{point.question}</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-700">
+                    {point.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {CATEGORIES.map((cat) => {
           const questions = QUESTIONS.filter((q) => q.category === cat.id);
           const answered = questions.filter((q) => answerMap[q.id]);
