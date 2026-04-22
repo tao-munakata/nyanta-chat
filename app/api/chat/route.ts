@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { generateReaction } from "@/lib/claude";
-import { chooseStrongerExpression, detectAnswerEmotion } from "@/lib/emotion";
+import {
+  chooseStrongerExpression,
+  createEmotionAwareReaction,
+  detectAnswerEmotion,
+} from "@/lib/emotion";
 
 export async function POST(request: Request) {
   const { questionText, userAnswer } = (await request.json()) as {
@@ -13,6 +17,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ...result,
+    reaction: createEmotionAwareReaction(detected, result.reaction),
     expression: chooseStrongerExpression(result.expression, detected.expression),
     emotion: detected.label,
   });

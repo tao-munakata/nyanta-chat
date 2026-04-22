@@ -153,3 +153,30 @@ export function chooseStrongerExpression(
     ? detectedExpression
     : aiExpression;
 }
+
+export function createEmotionAwareReaction(
+  detected: EmotionResult,
+  aiReaction: string
+): string {
+  const reactionByEmotion: Record<EmotionLabel, string> = {
+    pain:
+      "つらいことを教えてくれてありがとうにゃ。大事な情報だから、先生に伝わるようにしっかり記録しておくにゃ♡",
+    anxiety:
+      "不安な気持ちも教えてくれてありがとうにゃ。にゃん太がやさしく受け止めて、ちゃんと残しておくにゃ♡",
+    confusion:
+      "わからないところがあっても大丈夫にゃ。今わかる範囲で教えてくれるだけで、とっても助かるにゃ♡",
+    relief:
+      "痛みがないことや大丈夫なことも、大切な情報にゃ。教えてくれてありがとうにゃん♡",
+    positive:
+      "前向きな気持ちを教えてくれてありがとうにゃ。先生にも伝わるように、にゃん太が残しておくにゃ♡",
+    important:
+      "大切な情報を教えてくれてありがとうにゃ。先生が確認しやすいように、しっかり記録しておくにゃ♡",
+    neutral: aiReaction || "にゃるほどにゃ〜♡ 教えてくれてありがとうにゃん！",
+  };
+
+  if (detected.label === "neutral") {
+    return reactionByEmotion.neutral;
+  }
+
+  return reactionByEmotion[detected.label];
+}
