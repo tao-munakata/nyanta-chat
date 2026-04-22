@@ -10,6 +10,7 @@ import ChatBubble from "@/components/ChatBubble";
 import ProgressBar from "@/components/ProgressBar";
 import InputArea from "@/components/InputArea";
 import { QUESTIONS } from "@/lib/questions";
+import { APP_VERSION } from "@/lib/version";
 
 type Message = {
   role: "nyanta" | "user";
@@ -363,7 +364,12 @@ export default function ChatPage() {
             size={48}
           />
           <div className="flex-1">
-            <h1 className="text-base font-bold text-pink-600">にゃん太先生の問診室</h1>
+            <div className="flex items-center justify-between gap-2">
+              <h1 className="text-base font-bold text-pink-600">にゃん太先生の問診室</h1>
+              <span className="shrink-0 rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-semibold text-pink-400">
+                {APP_VERSION}
+              </span>
+            </div>
             <ProgressBar current={currentIndex} total={QUESTIONS.length} />
           </div>
         </div>

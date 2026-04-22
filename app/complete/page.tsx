@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSessionAnswers } from "@/lib/db";
 import { QUESTIONS, CATEGORIES } from "@/lib/questions";
+import { APP_VERSION } from "@/lib/version";
 import NyantaFace from "@/components/NyantaFace";
 import PrintButton from "@/components/PrintButton";
 
@@ -22,6 +23,9 @@ export default async function CompletePage({ searchParams }: Props) {
         <h1 className="text-xl font-bold text-pink-600 mt-2">
           問診完了にゃ♡
         </h1>
+        <p className="mt-1 text-[10px] font-semibold text-pink-400">
+          {APP_VERSION}
+        </p>
         <p className="text-sm text-slate-500 mt-1">
           全部答えてくれてありがとうにゃ〜！🐾
         </p>
