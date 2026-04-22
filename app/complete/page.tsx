@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { getSessionAnswers } from "@/lib/db";
 import { QUESTIONS, CATEGORIES } from "@/lib/questions";
-import { buildImportantPoints } from "@/lib/summary";
+import { buildImportantPoints, IMPORTANT_POINT_GROUPS } from "@/lib/summary";
 import { APP_VERSION } from "@/lib/version";
+import CsvDownloadButton from "@/components/CsvDownloadButton";
 import NyantaFace from "@/components/NyantaFace";
 import PrintButton from "@/components/PrintButton";
 
@@ -48,19 +49,47 @@ export default async function CompletePage({ searchParams }: Props) {
             <p className="text-xs text-slate-400 mb-3">
               診察前に確認してほしい回答を自動でまとめたにゃ
             </p>
-            <div className="flex flex-col gap-3">
-              {importantPoints.map((point) => (
-                <div
-                  key={point.id}
-                  className={`rounded-xl border px-3 py-2 ${toneClass[point.tone]}`}
-                >
-                  <div className="text-xs font-bold">{point.label}</div>
-                  <p className="mt-1 text-xs text-slate-500">{point.question}</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-700">
-                    {point.answer}
-                  </p>
-                </div>
-              ))}
+            <div className="flex flex-col gap-4">
+              {IMPORTANT_POINT_GROUPS.map((group) => {
+                const groupPoints = importantPoints.filter(
+                  (point) => point.tone === group.tone
+                );
+                if (groupPoints.length === 0) return null;
+
+                return (
+                  <div key={group.tone}>
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div>
+                        <h3 className="text-xs font-bold text-slate-700">
+                          {group.label}
+                        </h3>
+                        <p className="text-[11px] text-slate-400">
+                          {group.description}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-bold text-pink-400">
+                        {groupPoints.length}件
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {groupPoints.map((point) => (
+                        <div
+                          key={point.id}
+                          className={`rounded-xl border px-3 py-2 ${toneClass[point.tone]}`}
+                        >
+                          <div className="text-xs font-bold">{point.label}</div>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {point.question}
+                          </p>
+                          <p className="mt-1 text-sm font-semibold text-slate-700">
+                            {point.answer}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
@@ -97,8 +126,9 @@ export default async function CompletePage({ searchParams }: Props) {
         })}
 
         {/* アクションボタン */}
-        <div className="flex gap-3 mt-2">
+        <div className="grid grid-cols-1 gap-3 mt-2 sm:grid-cols-3">
           <PrintButton />
+          <CsvDownloadButton sessionId={sessionId} />
           {/* basePath('/nyanta')はNext.js Linkが自動付与する */}
           <Link
             href="/"

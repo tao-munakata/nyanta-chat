@@ -22,6 +22,8 @@ type Message = {
 const WELCOME_MESSAGE =
   "こんにゃちはにゃん！🐾 今日はおうちでお医者さんに来てもらうお話にゃ？\n緊張してるかもだけど、にゃん太が一緒に優しく聞くにゃ♡\n一緒に答えていこっか！";
 
+const SESSION_STORAGE_KEY = "nyanta-current-session";
+
 const CHARACTER_BY_CATEGORY: Record<string, CharacterVersion> = {
   basic: "doctor",
   symptoms: "pink",
@@ -135,23 +137,75 @@ export default function ChatPage() {
 
   // セッション初期化
   useEffect(() => {
-    fetch("/nyanta/api/session", { method: "POST" })
-      .then((r) => r.json())
-      .then((data: { sessionId: string }) => {
-        setSessionId(data.sessionId);
-        // 少し待ってから最初の質問を表示
-        setTimeout(() => {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: "nyanta",
-              text: QUESTIONS[0].text,
-              expression: "welcome",
-              version: getCharacterVersion(0),
-            },
-          ]);
-        }, 800);
-      });
+    const showQuestion = (
+      questionIndex: number,
+      currentMessages: Message[]
+    ) => {
+      setTimeout(() => {
+        setMessages([
+          ...currentMessages,
+          {
+            role: "nyanta",
+            text: QUESTIONS[questionIndex].text,
+            expression: "welcome",
+            version: getCharacterVersion(questionIndex),
+          },
+        ]);
+      }, 800);
+    };
+
+    const createNewSession = async () => {
+      const response = await fetch("/nyanta/api/session", { method: "POST" });
+      const data = (await response.json()) as { sessionId: string };
+      window.localStorage.setItem(SESSION_STORAGE_KEY, data.sessionId);
+      setSessionId(data.sessionId);
+      showQuestion(0, [
+        { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
+      ]);
+    };
+
+    const initSession = async () => {
+      const storedSessionId = window.localStorage.getItem(SESSION_STORAGE_KEY);
+
+      if (storedSessionId) {
+        const response = await fetch(
+          `/nyanta/api/session?session=${storedSessionId}`
+        );
+
+        if (response.ok) {
+          const data = (await response.json()) as {
+            session: { status: string };
+            answers: { question_id: string; answer: string }[];
+          };
+
+          if (data.session.status === "complete") {
+            window.localStorage.removeItem(SESSION_STORAGE_KEY);
+          } else {
+            const nextIndex = Math.min(data.answers.length, QUESTIONS.length - 1);
+            const resumedMessages: Message[] = [
+              { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
+              {
+                role: "nyanta",
+                text: "前回の続きから再開するにゃ。保存していたところから進めるにゃん♡",
+                expression: "encouraging",
+                version: getCharacterVersion(nextIndex),
+              },
+            ];
+
+            setSessionId(storedSessionId);
+            setCurrentIndex(nextIndex);
+            showQuestion(nextIndex, resumedMessages);
+            return;
+          }
+        } else {
+          window.localStorage.removeItem(SESSION_STORAGE_KEY);
+        }
+      }
+
+      await createNewSession();
+    };
+
+    initSession();
   }, []);
 
   // メッセージ追加時に最下部へスクロール
@@ -191,6 +245,7 @@ export default function ChatPage() {
     setExpression("thinking");
 
     // 回答を保存（スキップ時は空文字を保存）
+    window.localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
     await fetch("/nyanta/api/session", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -242,6 +297,7 @@ export default function ChatPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "complete", sessionId }),
       });
+      window.localStorage.removeItem(SESSION_STORAGE_KEY);
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
@@ -285,8 +341,21 @@ export default function ChatPage() {
   const handleBack = () => {
     if (disabled || currentIndex === 0) return;
 
+    const previousIndex = currentIndex - 1;
+    if (sessionId) {
+      fetch("/nyanta/api/session", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "delete_answer",
+          sessionId,
+          questionId: QUESTIONS[previousIndex].id,
+        }),
+      });
+    }
+
     setMessages((prev) => prev.slice(0, Math.max(2, prev.length - 3)));
-    setCurrentIndex((prev) => prev - 1);
+    setCurrentIndex(previousIndex);
     setInputError(null);
     setExpression("welcome");
   };

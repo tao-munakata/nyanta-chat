@@ -1,5 +1,31 @@
 import { NextResponse } from "next/server";
-import { createSession, saveAnswer, completeSession } from "@/lib/db";
+import {
+  completeSession,
+  createSession,
+  deleteAnswer,
+  getSession,
+  getSessionAnswers,
+  saveAnswer,
+} from "@/lib/db";
+
+// GET: 既存セッションを取得
+export async function GET(request: Request) {
+  const sessionId = new URL(request.url).searchParams.get("session");
+
+  if (!sessionId) {
+    return NextResponse.json({ error: "session is required" }, { status: 400 });
+  }
+
+  const session = getSession(sessionId);
+  if (!session) {
+    return NextResponse.json({ error: "session not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({
+    session,
+    answers: getSessionAnswers(sessionId),
+  });
+}
 
 // POST: 新しいセッションを作成
 export async function POST() {
@@ -24,6 +50,15 @@ export async function PUT(request: Request) {
   if (body.action === "complete") {
     const { sessionId } = body as { sessionId: string };
     completeSession(sessionId);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (body.action === "delete_answer") {
+    const { sessionId, questionId } = body as {
+      sessionId: string;
+      questionId: string;
+    };
+    deleteAnswer(sessionId, questionId);
     return NextResponse.json({ ok: true });
   }
 

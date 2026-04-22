@@ -8,6 +8,24 @@ export type ImportantPoint = {
   tone: "urgent" | "caution" | "info";
 };
 
+export const IMPORTANT_POINT_GROUPS = [
+  {
+    tone: "urgent",
+    label: "要確認",
+    description: "診察前に特に確認したい内容",
+  },
+  {
+    tone: "caution",
+    label: "注意",
+    description: "診察・支援の参考になる内容",
+  },
+  {
+    tone: "info",
+    label: "参考",
+    description: "訪問準備や希望に関する内容",
+  },
+] as const;
+
 type AnswerMap = Record<string, string | undefined>;
 
 const isAnswered = (answer?: string): answer is string =>

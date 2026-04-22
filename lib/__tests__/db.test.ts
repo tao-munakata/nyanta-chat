@@ -7,8 +7,14 @@ import path from "path";
 process.env.DB_PATH = path.join(process.cwd(), "data/test.db");
 
 // db.tsをインポート（この時点ではまだ存在しないのでエラーになる）
-const { createSession, saveAnswer, completeSession, getSessionAnswers } =
-  await import("../db.js");
+const {
+  createSession,
+  deleteAnswer,
+  saveAnswer,
+  completeSession,
+  getSession,
+  getSessionAnswers,
+} = await import("../db.js");
 
 describe("db", () => {
   beforeEach(() => {
@@ -36,11 +42,26 @@ describe("db", () => {
     expect(answers[0].answer).toBe("田中太郎");
   });
 
+  it("saveAnswer: 同じ質問の回答を更新できる", () => {
+    const sessionId = createSession();
+    saveAnswer(sessionId, "basic-name", "田中太郎");
+    saveAnswer(sessionId, "basic-name", "山田花子");
+    const answers = getSessionAnswers(sessionId);
+    expect(answers).toHaveLength(1);
+    expect(answers[0].answer).toBe("山田花子");
+  });
+
+  it("deleteAnswer: 回答を削除できる", () => {
+    const sessionId = createSession();
+    saveAnswer(sessionId, "basic-name", "田中太郎");
+    deleteAnswer(sessionId, "basic-name");
+    expect(getSessionAnswers(sessionId)).toHaveLength(0);
+  });
+
   it("completeSession: ステータスをcompleteに更新する", () => {
     const sessionId = createSession();
     completeSession(sessionId);
-    // エラーなく完了すれば OK（ステータスはgetSessionAnswersで間接確認）
-    expect(true).toBe(true);
+    expect(getSession(sessionId)?.status).toBe("complete");
   });
 
   it("getSessionAnswers: 複数回答を返す", () => {

@@ -48,17 +48,30 @@ export function saveAnswer(
   questionId: string,
   answer: string
 ): void {
-  getDb()
-    .prepare(
+  const db = getDb();
+  const save = db.transaction(() => {
+    db.prepare("DELETE FROM answers WHERE session_id = ? AND question_id = ?").run(
+      sessionId,
+      questionId
+    );
+    db.prepare(
       "INSERT INTO answers (session_id, question_id, answer, created_at) VALUES (?, ?, ?, ?)"
-    )
-    .run(sessionId, questionId, answer, Date.now());
+    ).run(sessionId, questionId, answer, Date.now());
+  });
+
+  save();
 }
 
 export function completeSession(sessionId: string): void {
   getDb()
     .prepare("UPDATE sessions SET status = 'complete' WHERE id = ?")
     .run(sessionId);
+}
+
+export function deleteAnswer(sessionId: string, questionId: string): void {
+  getDb()
+    .prepare("DELETE FROM answers WHERE session_id = ? AND question_id = ?")
+    .run(sessionId, questionId);
 }
 
 export function getSessionAnswers(
@@ -69,6 +82,14 @@ export function getSessionAnswers(
       "SELECT question_id, answer FROM answers WHERE session_id = ? ORDER BY id ASC"
     )
     .all(sessionId) as { question_id: string; answer: string }[];
+}
+
+export function getSession(
+  sessionId: string
+): { id: string; status: string } | undefined {
+  return getDb()
+    .prepare("SELECT id, status FROM sessions WHERE id = ?")
+    .get(sessionId) as { id: string; status: string } | undefined;
 }
 
 export function resetDb(): void {
