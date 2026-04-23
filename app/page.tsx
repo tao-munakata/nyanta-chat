@@ -85,11 +85,25 @@ function validatePhoneNumber(answer: string): string | null {
 }
 
 function validateBirthDate(answer: string): string | null {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(answer)) {
-    return "生年月日は正しい日付で入力してにゃ";
+  const normalized = answer
+    .normalize("NFKC")
+    .replace(/\s/g, "")
+    .trim();
+
+  const compactMatch = normalized.match(/^(\d{4})(\d{2})(\d{2})$/);
+  const separatedParts = normalized.split(/\D+/).filter(Boolean);
+
+  if (!compactMatch && separatedParts.length !== 3) {
+    return "生年月日は 19500101 または 1950-01-01 のように入力してにゃ";
   }
 
-  const [year, month, day] = answer.split("-").map(Number);
+  const [, compactYear, compactMonth, compactDay] = compactMatch ?? [];
+  const [yearText, monthText, dayText] = compactMatch
+    ? [compactYear, compactMonth, compactDay]
+    : separatedParts;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
   const birthDate = new Date(year, month - 1, day);
 
   if (
