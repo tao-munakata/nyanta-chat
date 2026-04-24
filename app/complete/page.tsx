@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { getSessionAnswers } from "@/lib/db";
 import { QUESTIONS, CATEGORIES } from "@/lib/questions";
-import { buildImportantPoints, IMPORTANT_POINT_GROUPS } from "@/lib/summary";
+import {
+  buildImportantPoints,
+  buildVisitSummaryCard,
+  IMPORTANT_POINT_GROUPS,
+} from "@/lib/summary";
 import { APP_VERSION } from "@/lib/version";
 import CsvDownloadButton from "@/components/CsvDownloadButton";
 import NyantaFace from "@/components/NyantaFace";
@@ -17,6 +21,7 @@ export default async function CompletePage({ searchParams }: Props) {
     rawAnswers.map((a) => [a.question_id, a.answer])
   );
   const importantPoints = buildImportantPoints(answerMap);
+  const visitSummaryCard = buildVisitSummaryCard(answerMap, importantPoints);
   const toneClass = {
     urgent: "border-red-200 bg-red-50 text-red-600",
     caution: "border-amber-200 bg-amber-50 text-amber-600",
@@ -41,6 +46,32 @@ export default async function CompletePage({ searchParams }: Props) {
 
       {/* 回答まとめ */}
       <main className="p-4 flex flex-col gap-4">
+        <section className="overflow-hidden rounded-2xl border border-pink-200 bg-white shadow-sm">
+          <div className="bg-pink-500 px-4 py-3 text-white">
+            <div className="text-xs font-semibold uppercase tracking-wide">
+              Visit Summary
+            </div>
+            <h2 className="mt-1 text-base font-bold">
+              訪問前サマリーカード
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-pink-50">
+              {visitSummaryCard.headline}
+            </p>
+          </div>
+          <div className="grid gap-px bg-pink-100 sm:grid-cols-2">
+            {visitSummaryCard.sections.map((section) => (
+              <div key={section.title} className="bg-white px-4 py-4">
+                <div className="text-xs font-bold text-pink-500">
+                  {section.title}
+                </div>
+                <p className="mt-2 text-sm font-medium leading-6 text-slate-700">
+                  {section.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {importantPoints.length > 0 && (
           <section className="bg-white rounded-2xl shadow-sm p-4 border-2 border-pink-100">
             <h2 className="text-sm font-bold text-pink-600 mb-1">

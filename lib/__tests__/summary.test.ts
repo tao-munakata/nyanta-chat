@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildImportantPoints } from "../summary.js";
+import { buildImportantPoints, buildVisitSummaryCard } from "../summary.js";
 
 describe("summary", () => {
   it("痛みやアレルギーなどの重要項目を抽出する", () => {
@@ -26,5 +26,22 @@ describe("summary", () => {
     });
 
     expect(points).toHaveLength(0);
+  });
+
+  it("訪問前サマリーカードを組み立てる", () => {
+    const answerMap = {
+      "symptoms-main": "足のむくみが続いている",
+      "symptoms-pain": "かなり痛い",
+      "adl-walk": "車椅子を使う",
+      "adl-family": "妻と同居",
+      "wishes-visit": "来週の午前中",
+    };
+    const points = buildImportantPoints(answerMap);
+    const card = buildVisitSummaryCard(answerMap, points);
+
+    expect(card.headline).toContain("足のむくみ");
+    expect(card.sections).toHaveLength(4);
+    expect(card.sections[1].body).toContain("痛み");
+    expect(card.sections[2].body).toContain("車椅子");
   });
 });
