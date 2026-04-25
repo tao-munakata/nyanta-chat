@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NyantaFace, {
   type CharacterVersion,
@@ -9,7 +10,7 @@ import NyantaFace, {
 import ChatBubble from "@/components/ChatBubble";
 import ProgressBar from "@/components/ProgressBar";
 import InputArea from "@/components/InputArea";
-import { QUESTIONS } from "@/lib/questions";
+import { QUESTIONS, type Question } from "@/lib/questions";
 import { APP_VERSION } from "@/lib/version";
 
 type Message = {
@@ -34,8 +35,11 @@ const CHARACTER_BY_CATEGORY: Record<string, CharacterVersion> = {
   wishes: "cream",
 };
 
-const getCharacterVersion = (questionIndex: number): CharacterVersion =>
-  CHARACTER_BY_CATEGORY[QUESTIONS[questionIndex]?.category] ?? "doctor";
+const getCharacterVersion = (
+  questions: Question[],
+  questionIndex: number
+): CharacterVersion =>
+  CHARACTER_BY_CATEGORY[questions[questionIndex]?.category] ?? "doctor";
 
 function validatePhoneNumber(answer: string): string | null {
   const normalized = answer
@@ -139,6 +143,7 @@ function validateBirthDate(answer: string): string | null {
 
 export default function ChatPage() {
   const router = useRouter();
+  const [questions, setQuestions] = useState<Question[]>(QUESTIONS);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
@@ -153,32 +158,43 @@ export default function ChatPage() {
   useEffect(() => {
     const showQuestion = (
       questionIndex: number,
-      currentMessages: Message[]
+      currentMessages: Message[],
+      currentQuestions: Question[]
     ) => {
       setTimeout(() => {
         setMessages([
           ...currentMessages,
           {
             role: "nyanta",
-            text: QUESTIONS[questionIndex].text,
+            text: currentQuestions[questionIndex].text,
             expression: "welcome",
-            version: getCharacterVersion(questionIndex),
+            version: getCharacterVersion(currentQuestions, questionIndex),
           },
         ]);
       }, 800);
     };
 
-    const createNewSession = async () => {
+    const loadQuestions = async (): Promise<Question[]> => {
+      const response = await fetch("/nyanta/api/questions");
+      if (!response.ok) return QUESTIONS;
+
+      const data = (await response.json()) as { questions: Question[] };
+      setQuestions(data.questions);
+      return data.questions;
+    };
+
+    const createNewSession = async (currentQuestions: Question[]) => {
       const response = await fetch("/nyanta/api/session", { method: "POST" });
       const data = (await response.json()) as { sessionId: string };
       window.localStorage.setItem(SESSION_STORAGE_KEY, data.sessionId);
       setSessionId(data.sessionId);
       showQuestion(0, [
         { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
-      ]);
+      ], currentQuestions);
     };
 
     const initSession = async () => {
+      const currentQuestions = await loadQuestions();
       const storedSessionId = window.localStorage.getItem(SESSION_STORAGE_KEY);
 
       if (storedSessionId) {
@@ -195,20 +211,23 @@ export default function ChatPage() {
           if (data.session.status === "complete") {
             window.localStorage.removeItem(SESSION_STORAGE_KEY);
           } else {
-            const nextIndex = Math.min(data.answers.length, QUESTIONS.length - 1);
+            const nextIndex = Math.min(
+              data.answers.length,
+              currentQuestions.length - 1
+            );
             const resumedMessages: Message[] = [
               { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
               {
                 role: "nyanta",
                 text: "前回の続きから再開するにゃ。保存していたところから進めるにゃん♡",
                 expression: "encouraging",
-                version: getCharacterVersion(nextIndex),
+                version: getCharacterVersion(currentQuestions, nextIndex),
               },
             ];
 
             setSessionId(storedSessionId);
             setCurrentIndex(nextIndex);
-            showQuestion(nextIndex, resumedMessages);
+            showQuestion(nextIndex, resumedMessages, currentQuestions);
             return;
           }
         } else {
@@ -216,7 +235,7 @@ export default function ChatPage() {
         }
       }
 
-      await createNewSession();
+      await createNewSession(currentQuestions);
     };
 
     initSession();
@@ -229,7 +248,7 @@ export default function ChatPage() {
 
   const handleAnswer = async (answer: string): Promise<boolean> => {
     if (!sessionId) return false;
-    const question = QUESTIONS[currentIndex];
+    const question = questions[currentIndex];
     setInputError(null);
 
     if (question.id === "basic-dob") {
@@ -290,18 +309,18 @@ export default function ChatPage() {
     }
 
     const nextIndex = currentIndex + 1;
-    const isLast = nextIndex >= QUESTIONS.length;
+    const isLast = nextIndex >= questions.length;
 
     // リアクションを表示
     setMessages((prev) => [
       ...prev,
       {
-        role: "nyanta",
-        text: reaction,
-        expression: nextExpression,
-        version: getCharacterVersion(currentIndex),
-      },
-    ]);
+            role: "nyanta",
+            text: reaction,
+            expression: nextExpression,
+            version: getCharacterVersion(questions, currentIndex),
+          },
+        ]);
     setExpression(nextExpression);
 
     if (isLast) {
@@ -335,9 +354,9 @@ export default function ChatPage() {
           ...prev,
           {
             role: "nyanta",
-            text: QUESTIONS[nextIndex].text,
+            text: questions[nextIndex].text,
             expression: "welcome",
-            version: getCharacterVersion(nextIndex),
+            version: getCharacterVersion(questions, nextIndex),
           },
         ]);
         setCurrentIndex(nextIndex);
@@ -363,7 +382,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           action: "delete_answer",
           sessionId,
-          questionId: QUESTIONS[previousIndex].id,
+          questionId: questions[previousIndex].id,
         }),
       });
     }
@@ -374,9 +393,9 @@ export default function ChatPage() {
     setExpression("welcome");
   };
 
-  const currentQuestion = QUESTIONS[currentIndex];
-  const currentCharacterVersion = getCharacterVersion(currentIndex);
-  const isComplete = currentIndex >= QUESTIONS.length;
+  const currentQuestion = questions[currentIndex];
+  const currentCharacterVersion = getCharacterVersion(questions, currentIndex);
+  const isComplete = currentIndex >= questions.length;
 
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col max-w-lg mx-auto relative overflow-hidden">
@@ -449,11 +468,19 @@ export default function ChatPage() {
           <div className="flex-1">
             <div className="flex items-center justify-between gap-2">
               <h1 className="text-base font-bold text-pink-600">にゃん太先生の問診室</h1>
-              <span className="shrink-0 rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-semibold text-pink-400">
-                {APP_VERSION}
-              </span>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/questions"
+                  className="shrink-0 rounded-full border border-pink-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-pink-500 transition-colors hover:bg-pink-50"
+                >
+                  質問を変える
+                </Link>
+                <span className="shrink-0 rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-semibold text-pink-400">
+                  {APP_VERSION}
+                </span>
+              </div>
             </div>
-            <ProgressBar current={currentIndex} total={QUESTIONS.length} />
+            <ProgressBar current={currentIndex} total={questions.length} />
           </div>
         </div>
       </header>
@@ -482,7 +509,7 @@ export default function ChatPage() {
             onSkip={handleSkip}
             onBack={handleBack}
             canGoBack={currentIndex > 0}
-            remainingCount={QUESTIONS.length - currentIndex}
+            remainingCount={questions.length - currentIndex}
             errorMessage={inputError}
             disabled={disabled}
           />

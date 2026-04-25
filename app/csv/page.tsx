@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { getSessionAnswers } from "@/lib/db";
+import { getQuestionOverrides, getSessionAnswers } from "@/lib/db";
 import { buildAnswersCsv, buildCsvRows } from "@/lib/csv";
+import { applyQuestionOverrides, QUESTIONS } from "@/lib/questions";
 import { APP_VERSION } from "@/lib/version";
 import CsvCopyButton from "@/components/CsvCopyButton";
 
@@ -16,7 +17,8 @@ export default async function CsvPage({ searchParams }: Props) {
         ])
       : []
   );
-  const rows = buildCsvRows(answerMap);
+  const questions = applyQuestionOverrides(QUESTIONS, getQuestionOverrides());
+  const rows = buildCsvRows(answerMap, questions);
   const csv = buildAnswersCsv(rows);
   const downloadHref = sessionId
     ? `/nyanta/api/session/csv?session=${encodeURIComponent(sessionId)}`

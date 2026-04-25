@@ -1,4 +1,4 @@
-import { CATEGORIES, QUESTIONS } from "@/lib/questions";
+import { CATEGORIES, QUESTIONS, type Question } from "@/lib/questions";
 
 export type CsvRow = {
   category: string;
@@ -10,9 +10,13 @@ export type AnswerMap = Record<string, string | undefined>;
 
 const escapeCsv = (value: string): string => `"${value.replace(/"/g, '""')}"`;
 
-export function buildCsvRows(answerMap: AnswerMap): CsvRow[] {
+export function buildCsvRows(
+  answerMap: AnswerMap,
+  questions: Question[] = QUESTIONS
+): CsvRow[] {
   return CATEGORIES.flatMap((category) =>
-    QUESTIONS.filter((question) => question.category === category.id)
+    questions
+      .filter((question) => question.category === category.id)
       .filter((question) => answerMap[question.id])
       .map((question) => ({
         category: category.label,

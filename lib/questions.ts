@@ -14,6 +14,8 @@ export type Category = {
   label: string;
 };
 
+export type QuestionOverrideMap = Record<string, string>;
+
 export const CATEGORIES: Category[] = [
   { id: "basic", label: "基本情報" },
   { id: "symptoms", label: "現在の症状" },
@@ -50,7 +52,7 @@ export const QUESTIONS: Question[] = [
   {
     id: "basic-gender",
     category: "basic",
-    text: "性別をおしえてにゃ♡",
+    text: "性別を選んでにゃ♡",
     type: "select",
     options: ["男性", "女性", "その他"],
     skippable: false,
@@ -221,4 +223,14 @@ export const QUESTIONS: Question[] = [
 
 export function getQuestion(id: string): Question | undefined {
   return QUESTIONS.find((q) => q.id === id);
+}
+
+export function applyQuestionOverrides(
+  questions: Question[],
+  overrides: QuestionOverrideMap
+): Question[] {
+  return questions.map((question) => ({
+    ...question,
+    text: overrides[question.id]?.trim() || question.text,
+  }));
 }

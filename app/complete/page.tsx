@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getSessionAnswers } from "@/lib/db";
-import { QUESTIONS, CATEGORIES } from "@/lib/questions";
+import { getQuestionOverrides, getSessionAnswers } from "@/lib/db";
+import { QUESTIONS, CATEGORIES, applyQuestionOverrides } from "@/lib/questions";
 import {
   buildImportantPoints,
   buildVisitSummaryCard,
@@ -17,10 +17,11 @@ export default async function CompletePage({ searchParams }: Props) {
   const { session: sessionId } = await searchParams;
 
   const rawAnswers = sessionId ? getSessionAnswers(sessionId) : [];
+  const questions = applyQuestionOverrides(QUESTIONS, getQuestionOverrides());
   const answerMap = Object.fromEntries(
     rawAnswers.map((a) => [a.question_id, a.answer])
   );
-  const importantPoints = buildImportantPoints(answerMap);
+  const importantPoints = buildImportantPoints(answerMap, questions);
   const visitSummaryCard = buildVisitSummaryCard(answerMap, importantPoints);
   const toneClass = {
     urgent: "border-red-200 bg-red-50 text-red-600",
@@ -126,8 +127,8 @@ export default async function CompletePage({ searchParams }: Props) {
         )}
 
         {CATEGORIES.map((cat) => {
-          const questions = QUESTIONS.filter((q) => q.category === cat.id);
-          const answered = questions.filter((q) => answerMap[q.id]);
+          const categoryQuestions = questions.filter((q) => q.category === cat.id);
+          const answered = categoryQuestions.filter((q) => answerMap[q.id]);
           if (answered.length === 0) return null;
           return (
             <section key={cat.id} className="bg-white rounded-2xl shadow-sm p-4">

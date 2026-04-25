@@ -1,5 +1,6 @@
-import { getSessionAnswers } from "@/lib/db";
+import { getQuestionOverrides, getSessionAnswers } from "@/lib/db";
 import { buildAnswersCsv, buildCsvRows } from "@/lib/csv";
+import { applyQuestionOverrides, QUESTIONS } from "@/lib/questions";
 
 export async function GET(request: Request) {
   const sessionId = new URL(request.url).searchParams.get("session");
@@ -14,7 +15,8 @@ export async function GET(request: Request) {
       answer.answer,
     ])
   );
-  const csv = buildAnswersCsv(buildCsvRows(answerMap));
+  const questions = applyQuestionOverrides(QUESTIONS, getQuestionOverrides());
+  const csv = buildAnswersCsv(buildCsvRows(answerMap, questions));
 
   return new Response(`\uFEFF${csv}`, {
     headers: {

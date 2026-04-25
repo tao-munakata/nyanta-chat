@@ -28,6 +28,11 @@ function getDb(): Database.Database {
         created_at INTEGER NOT NULL,
         FOREIGN KEY (session_id) REFERENCES sessions(id)
       );
+      CREATE TABLE IF NOT EXISTS question_overrides (
+        question_id TEXT PRIMARY KEY,
+        text TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+      );
     `);
   }
   return _db;
@@ -90,6 +95,34 @@ export function getSession(
   return getDb()
     .prepare("SELECT id, status FROM sessions WHERE id = ?")
     .get(sessionId) as { id: string; status: string } | undefined;
+}
+
+export function getQuestionOverrides(): Record<string, string> {
+  const rows = getDb()
+    .prepare("SELECT question_id, text FROM question_overrides ORDER BY question_id ASC")
+    .all() as { question_id: string; text: string }[];
+
+  return Object.fromEntries(rows.map((row) => [row.question_id, row.text]));
+}
+
+export function saveQuestionOverride(questionId: string, text: string): void {
+  getDb()
+    .prepare(
+      `
+        INSERT INTO question_overrides (question_id, text, updated_at)
+        VALUES (?, ?, ?)
+        ON CONFLICT(question_id) DO UPDATE SET
+          text = excluded.text,
+          updated_at = excluded.updated_at
+      `
+    )
+    .run(questionId, text, Date.now());
+}
+
+export function deleteQuestionOverride(questionId: string): void {
+  getDb()
+    .prepare("DELETE FROM question_overrides WHERE question_id = ?")
+    .run(questionId);
 }
 
 export function resetDb(): void {
