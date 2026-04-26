@@ -57,6 +57,132 @@ function getClient(): Anthropic {
   return client;
 }
 
+const normalizeMessage = (message: string): string =>
+  message
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (char) =>
+      String.fromCharCode(char.charCodeAt(0) - 0xfee0)
+    )
+    .toLowerCase()
+    .trim();
+
+const includesAny = (message: string, words: string[]): boolean =>
+  words.some((word) => message.includes(word));
+
+function generateLocalServiceReply(
+  serviceId: ServiceId,
+  userMessage: string
+): ReactionResult {
+  const text = normalizeMessage(userMessage);
+  const service = getServiceConfig(serviceId);
+
+  if (serviceId === "smalltalk") {
+    if (includesAny(text, ["疲れ", "つかれ", "しんど", "眠い", "ねむい"])) {
+      return {
+        reaction:
+          "今日はよくがんばった日にゃ。少し肩の力を抜いて、あったかい飲み物でも飲む時間にするにゃん。",
+        expression: "relieved",
+      };
+    }
+    if (includesAny(text, ["嬉し", "うれし", "楽しか", "よかった", "好き"])) {
+      return {
+        reaction:
+          "それはいい話にゃ。にゃん太までちょっと嬉しくなったにゃん、どんなところが一番よかったにゃ？",
+        expression: "happy",
+      };
+    }
+    if (includesAny(text, ["暇", "ひま", "退屈", "話したい"])) {
+      return {
+        reaction:
+          "じゃあ少しおしゃべりするにゃ。今日の気分を天気で言うと、晴れ・くもり・雨のどれに近いにゃ？",
+        expression: "welcome",
+      };
+    }
+    return {
+      reaction:
+        "うんうん、聞いてるにゃ。もう少しだけ、その話の続きを教えてほしいにゃん。",
+      expression: "happy",
+    };
+  }
+
+  if (serviceId === "mood") {
+    if (
+      includesAny(text, [
+        "死にたい",
+        "消えたい",
+        "自傷",
+        "傷つけ",
+        "終わりにしたい",
+      ])
+    ) {
+      return {
+        reaction:
+          "そこまでつらい気持ちを一人で抱えているのは危ないにゃ。今すぐ近くの人、救急、地域の相談窓口につながってほしいにゃ。",
+        expression: "serious",
+      };
+    }
+    if (includesAny(text, ["やる気", "動け", "何も", "だるい", "無理"])) {
+      return {
+        reaction:
+          "やる気が出ない時は、心と体が休みたいサインかもしれないにゃ。今日は小さく、顔を洗うだけでも一歩にしていいにゃん。",
+        expression: "encouraging",
+      };
+    }
+    if (includesAny(text, ["責め", "だめ", "ダメ", "嫌い", "価値"])) {
+      return {
+        reaction:
+          "自分を責める声が強い時ほど、事実より厳しく見えてしまうことがあるにゃ。今は責めるより、つらかったことを分けて見るにゃん。",
+        expression: "worried",
+      };
+    }
+    if (includesAny(text, ["不安", "心配", "怖い", "こわい", "緊張"])) {
+      return {
+        reaction:
+          "不安を言葉にできたのは大事な一歩にゃ。まずは『何が一番心配か』を一つだけ選んでみるにゃん。",
+        expression: "worried",
+      };
+    }
+    return {
+      reaction:
+        "話してくれてありがとうにゃ。今の気持ちを急いで変えなくていいから、一緒に少しずつ整理するにゃん。",
+      expression: "encouraging",
+    };
+  }
+
+  if (serviceId === "secret") {
+    if (includesAny(text, ["誰にも", "言えない", "秘密", "恥ずか", "匿名"])) {
+      return {
+        reaction:
+          "言いにくいことをここに置いてくれてありがとうにゃ。まずは名前や個人情報を出さずに、何が一番重いか一緒に整理するにゃん。",
+        expression: "thinking",
+      };
+    }
+    if (includesAny(text, ["伝えたい", "line", "ライン", "送る", "文面"])) {
+      return {
+        reaction:
+          "相手に送る言葉を一緒にやわらかく整えるにゃ。責める文より、『私はこう感じた』から始めると伝わりやすいにゃん。",
+        expression: "encouraging",
+      };
+    }
+    if (includesAny(text, ["怒り", "許せ", "むかつ", "嫌い", "復讐"])) {
+      return {
+        reaction:
+          "強い怒りがある時は、すぐ送らず下書きにするのが安全にゃ。まずは送らない前提で、言いたいことを全部ここに出すにゃん。",
+        expression: "serious",
+      };
+    }
+    return {
+      reaction:
+        "ここでは急いで結論を出さなくて大丈夫にゃ。相手に見せる言葉と、自分だけの本音を分けて考えるにゃん。",
+      expression: "thinking",
+    };
+  }
+
+  return {
+    reaction: service.fallbackReaction,
+    expression: service.expression,
+  };
+}
+
 export async function generateReaction(
   questionText: string,
   userAnswer: string
@@ -112,6 +238,10 @@ export async function generateServiceReply(
 ): Promise<ReactionResult> {
   const service = getServiceConfig(serviceId);
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return generateLocalServiceReply(service.id, userMessage);
+  }
+
   try {
     const message = await getClient().messages.create({
       model: "claude-haiku-4-5-20251001",
@@ -144,9 +274,6 @@ export async function generateServiceReply(
       expression,
     };
   } catch {
-    return {
-      reaction: service.fallbackReaction,
-      expression: service.expression,
-    };
+    return generateLocalServiceReply(service.id, userMessage);
   }
 }
