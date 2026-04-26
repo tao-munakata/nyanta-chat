@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "にゃん太先生の問診室",
-  description: "訪問診療・在宅医療の事前問診チャット",
+  title: "にゃん太チャット",
+  description: "問診、雑談、気持ち整理、匿名相談を切り替えられる猫チャット",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

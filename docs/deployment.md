@@ -75,6 +75,10 @@ compose設定ではホスト側 `3001` 番に公開します。
 
 ```text
 http://<server-host>:3001/nyanta
+http://<server-host>:3001/nyanta/medical
+http://<server-host>:3001/nyanta/smalltalk
+http://<server-host>:3001/nyanta/mood
+http://<server-host>:3001/nyanta/secret
 ```
 
 リバースプロキシを使う場合も、アプリ側のbasePathは `/nyanta` です。

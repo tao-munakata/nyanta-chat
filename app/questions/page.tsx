@@ -169,13 +169,13 @@ export default function QuestionsPage() {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Link
-            href="/"
+            href="/medical"
             className="bg-white border-2 border-pink-200 text-pink-500 rounded-xl py-3 font-semibold hover:bg-pink-50 transition-colors text-center"
           >
             問診に戻る
           </Link>
           <Link
-            href="/complete"
+            href="/medical/complete"
             className="bg-pink-500 text-white rounded-xl py-3 font-semibold hover:bg-pink-600 transition-colors text-center"
           >
             完了画面を見る

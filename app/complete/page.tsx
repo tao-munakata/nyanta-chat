@@ -163,7 +163,7 @@ export default async function CompletePage({ searchParams }: Props) {
           <CsvDownloadButton sessionId={sessionId} />
           {/* basePath('/nyanta')はNext.js Linkが自動付与する */}
           <Link
-            href="/"
+            href="/medical"
             className="flex-1 bg-white border-2 border-pink-200 text-pink-500 rounded-xl py-3 font-semibold hover:bg-pink-50 transition-colors text-center"
           >
             最初からやり直す

@@ -1,6 +1,6 @@
 # nyanta-chat
 
-にゃん太先生の問診チャットです。訪問診療・在宅医療の初回相談に向けて、利用者がチャット形式で問診項目を入力し、最後に回答まとめを保存できるNext.jsアプリです。
+にゃん太先生の問診チャットを起点にした、テーマ切り替え型の猫チャットです。訪問診療・在宅医療の問診票に加えて、雑談、気持ち整理、匿名相談の横展開を同じVPS上で動作確認できます。
 
 ## 構成
 
@@ -10,10 +10,16 @@
 - AI reaction: Anthropic Claude API
 - Runtime: Docker / Node.js
 - Production path: `/nyanta`
+- Service paths: `/nyanta/medical`, `/nyanta/smalltalk`, `/nyanta/mood`, `/nyanta/secret`
 
 ## 主な機能
 
-- 問診質問25問、7カテゴリ
+- `/nyanta` でサービス一覧を表示
+- `nyanta-medical`: 問診質問25問、7カテゴリ
+- `nyanta-smalltalk`: 猫の顔を見ながら雑談できる自由チャット
+- `nyanta-mood`: 落ち込みや不安をやさしく整理する自由チャット
+- `nyanta-secret`: 人には言いにくい話題を匿名前提で整理する自由チャット
+- テーマごとのシステムプロンプト、猫キャラクター、色、注意文切り替え
 - テキスト、日付、選択肢、写真入力
 - Claudeによる短い猫語リアクション
 - セッション作成、回答保存、完了処理
@@ -72,6 +78,10 @@ npm run dev
 
 ```text
 http://localhost:3000/nyanta
+http://localhost:3000/nyanta/medical
+http://localhost:3000/nyanta/smalltalk
+http://localhost:3000/nyanta/mood
+http://localhost:3000/nyanta/secret
 ```
 
 ## Dockerでの起動
@@ -98,6 +108,10 @@ docker compose down
 
 ```text
 http://localhost:3001/nyanta
+http://localhost:3001/nyanta/medical
+http://localhost:3001/nyanta/smalltalk
+http://localhost:3001/nyanta/mood
+http://localhost:3001/nyanta/secret
 ```
 
 ## デモ配布パッケージ

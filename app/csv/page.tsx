@@ -22,7 +22,7 @@ export default async function CsvPage({ searchParams }: Props) {
   const csv = buildAnswersCsv(rows);
   const downloadHref = sessionId
     ? `/nyanta/api/session/csv?session=${encodeURIComponent(sessionId)}`
-    : "/";
+    : "/medical";
 
   return (
     <div className="min-h-screen bg-pink-50 max-w-lg mx-auto">
@@ -65,7 +65,7 @@ export default async function CsvPage({ searchParams }: Props) {
           </a>
           <CsvCopyButton csv={csv} />
           <Link
-            href={sessionId ? `/complete?session=${sessionId}` : "/"}
+            href={sessionId ? `/medical/complete?session=${sessionId}` : "/medical"}
             className="bg-white border-2 border-pink-200 text-pink-500 rounded-xl py-3 font-semibold hover:bg-pink-50 transition-colors text-center"
           >
             戻る

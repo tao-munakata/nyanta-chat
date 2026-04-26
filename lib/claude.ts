@@ -1,5 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
+import { getServiceConfig, type ServiceId } from "@/lib/services";
 
 export type ClaudeExpression =
   | "welcome"
@@ -35,6 +36,17 @@ const SYSTEM_PROMPT = `あなたは「にゃん太先生」です。白衣と聴
 - "encouraging": 最後の質問・困難そうな状況に励ます時
 - "worried": 不安・心配・困りごとが強い時
 - "relieved": 問題なし・痛みなし・できる等、安心できる回答の時`;
+
+const VALID_EXPRESSIONS: ClaudeExpression[] = [
+  "welcome",
+  "happy",
+  "surprised",
+  "serious",
+  "thinking",
+  "encouraging",
+  "worried",
+  "relieved",
+];
 
 let client: Anthropic | null = null;
 
@@ -90,6 +102,51 @@ export async function generateReaction(
     return {
       reaction: "なるほどにゃ〜！ありがとうにゃ♡",
       expression: "welcome",
+    };
+  }
+}
+
+export async function generateServiceReply(
+  serviceId: ServiceId,
+  userMessage: string
+): Promise<ReactionResult> {
+  const service = getServiceConfig(serviceId);
+
+  try {
+    const message = await getClient().messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 260,
+      system: `${service.systemPrompt}
+
+表情コードは次のどれかのみ：${VALID_EXPRESSIONS.join(", ")}`,
+      messages: [
+        {
+          role: "user",
+          content: userMessage,
+        },
+      ],
+    });
+
+    const text =
+      message.content[0].type === "text" ? message.content[0].text : "";
+    const parsed = JSON.parse(text);
+    const expression: ClaudeExpression = VALID_EXPRESSIONS.includes(
+      parsed.expression
+    )
+      ? parsed.expression
+      : service.expression;
+
+    return {
+      reaction:
+        typeof parsed.reaction === "string"
+          ? parsed.reaction
+          : service.fallbackReaction,
+      expression,
+    };
+  } catch {
+    return {
+      reaction: service.fallbackReaction,
+      expression: service.expression,
     };
   }
 }
