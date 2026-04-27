@@ -32,11 +32,9 @@ export default function InputArea({
 
   useEffect(() => {
     if (!disabled && question.type !== "photo") {
-      if (question.type === "date") {
-        dateInputRef.current?.focus();
-      } else {
-        textInputRef.current?.focus();
-      }
+      const input =
+        question.type === "date" ? dateInputRef.current : textInputRef.current;
+      window.requestAnimationFrame(() => input?.focus());
     }
   }, [disabled, question.id, question.type]);
 
@@ -185,6 +183,7 @@ export default function InputArea({
         <input
           ref={dateInputRef}
           type="text"
+          autoFocus
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={disabled}
@@ -195,6 +194,7 @@ export default function InputArea({
       ) : (
         <textarea
           ref={textInputRef}
+          autoFocus
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={disabled}
