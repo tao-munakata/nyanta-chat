@@ -29,10 +29,17 @@ export default function FreeChatPage({ service }: Props) {
   const [expression, setExpression] = useState<Expression>(service.expression);
   const [disabled, setDisabled] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!disabled) {
+      inputRef.current?.focus();
+    }
+  }, [disabled, messages.length]);
 
   const submitMessage = async (messageText: string) => {
     const trimmed = messageText.trim();
@@ -140,6 +147,7 @@ export default function FreeChatPage({ service }: Props) {
         </div>
         <div className="flex gap-2">
           <textarea
+            ref={inputRef}
             value={text}
             onChange={(event) => setText(event.target.value)}
             disabled={disabled}

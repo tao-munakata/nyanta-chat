@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { Question } from "@/lib/questions";
 
 type Props = {
@@ -27,6 +27,18 @@ export default function InputArea({
   const [text, setText] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!disabled && question.type !== "photo") {
+      if (question.type === "date") {
+        dateInputRef.current?.focus();
+      } else {
+        textInputRef.current?.focus();
+      }
+    }
+  }, [disabled, question.id, question.type]);
 
   const handleSubmit = async () => {
     if (question.type === "photo") {
@@ -171,6 +183,7 @@ export default function InputArea({
       </div>
       {question.type === "date" ? (
         <input
+          ref={dateInputRef}
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -181,6 +194,7 @@ export default function InputArea({
         />
       ) : (
         <textarea
+          ref={textInputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={disabled}
