@@ -27,16 +27,17 @@ export default function InputArea({
   const [text, setText] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const dateInputRef = useRef<HTMLInputElement>(null);
+  const shortInputRef = useRef<HTMLInputElement>(null);
   const textInputRef = useRef<HTMLTextAreaElement>(null);
+  const usesShortInput =
+    question.type === "date" || question.id === "basic-phone";
 
   useEffect(() => {
     if (!disabled && question.type !== "photo") {
-      const input =
-        question.type === "date" ? dateInputRef.current : textInputRef.current;
+      const input = usesShortInput ? shortInputRef.current : textInputRef.current;
       window.requestAnimationFrame(() => input?.focus());
     }
-  }, [disabled, question.id, question.type]);
+  }, [disabled, question.id, question.type, usesShortInput]);
 
   const handleSubmit = async () => {
     if (question.type === "photo") {
@@ -179,17 +180,29 @@ export default function InputArea({
           残り{remainingCount}問
         </span>
       </div>
-      {question.type === "date" ? (
+      {usesShortInput ? (
         <input
-          ref={dateInputRef}
-          type="text"
+          ref={shortInputRef}
+          type={question.id === "basic-phone" ? "tel" : "text"}
           autoFocus
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={disabled}
-          inputMode="numeric"
-          placeholder="例：1950-01-01 または 19500101"
+          inputMode={question.id === "basic-phone" ? "tel" : "numeric"}
+          autoComplete={question.id === "basic-phone" ? "tel" : "bday"}
+          pattern={question.id === "basic-phone" ? "[0-9０-９\\-\\s()（）]*" : "[0-9０-９/\\-\\.]*"}
+          placeholder={
+            question.id === "basic-phone"
+              ? "例：09012345678"
+              : "例：1950-01-01 または 19500101"
+          }
           className="w-full border-2 border-pink-200 rounded-xl px-4 py-3 text-base text-slate-700 focus:outline-none focus:border-pink-400 disabled:opacity-50"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              void handleSubmit();
+            }
+          }}
         />
       ) : (
         <textarea
