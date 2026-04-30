@@ -8,7 +8,7 @@ import {
 } from "@/lib/summary";
 import { APP_VERSION } from "@/lib/version";
 import CsvDownloadButton from "@/components/CsvDownloadButton";
-import NyantaFace from "@/components/NyantaFace";
+import NyankoFace from "@/components/NyankoFace";
 import PrintButton from "@/components/PrintButton";
 
 type Props = { searchParams: Promise<{ session?: string }> };
@@ -33,7 +33,7 @@ export default async function CompletePage({ searchParams }: Props) {
     <div className="min-h-screen bg-pink-50 max-w-lg mx-auto">
       {/* ヘッダー */}
       <header className="bg-white border-b border-pink-100 px-4 py-4 text-center">
-        <NyantaFace expression="encouraging" version="cream" size={64} />
+        <NyankoFace expression="encouraging" version="cream" size={64} />
         <h1 className="text-xl font-bold text-pink-600 mt-2">
           問診完了にゃ♡
         </h1>
@@ -161,7 +161,7 @@ export default async function CompletePage({ searchParams }: Props) {
         <div className="grid grid-cols-1 gap-3 mt-2 sm:grid-cols-3">
           <PrintButton />
           <CsvDownloadButton sessionId={sessionId} />
-          {/* basePath('/nyanta')はNext.js Linkが自動付与する */}
+          {/* basePath('/nyanko')はNext.js Linkが自動付与する */}
           <Link
             href="/medical"
             className="flex-1 bg-white border-2 border-pink-200 text-pink-500 rounded-xl py-3 font-semibold hover:bg-pink-50 transition-colors text-center"
@@ -171,7 +171,7 @@ export default async function CompletePage({ searchParams }: Props) {
         </div>
 
         <p className="text-center text-xs text-slate-400 pb-4 px-2">
-          ※ これはにゃん太先生のお手伝いにゃ。本当の診断・診療は訪問のお医者さんにお任せしてね！
+          ※ これはにゃんこ先生のお手伝いにゃ。本当の診断・診療は訪問のお医者さんにお任せしてね！
         </p>
       </main>
     </div>

@@ -17,16 +17,16 @@ data/
 
 ```env
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
-DB_PATH=./data/nyanta.db
-BASE_PATH=/nyanta
+DB_PATH=./data/nyanko.db
+BASE_PATH=/nyanko
 HOST_PORT=3001
 ```
 
 ## 初回デプロイ
 
 ```bash
-git clone https://github.com/tao-munakata/nyanta-chat.git
-cd nyanta-chat
+git clone https://github.com/tao-munakata/nyanko-chat.git
+cd nyanko-chat
 cp .env.example .env
 ```
 
@@ -41,7 +41,7 @@ docker compose logs -f
 ## 更新デプロイ
 
 ```bash
-cd nyanta-chat
+cd nyanko-chat
 git pull
 docker compose up -d --build
 docker compose logs -f
@@ -58,8 +58,8 @@ docker compose logs -f
 サーバ側では圧縮ファイルを展開し、同梱の `DEMO_SETUP.md` に従って起動します。
 
 ```bash
-tar xzf nyanta-chat-demo-*.tar.gz
-cd nyanta-chat
+tar xzf nyanko-chat-demo-*.tar.gz
+cd nyanko-chat
 cp .env.example .env
 mkdir -p data
 docker compose up -d --build
@@ -76,11 +76,11 @@ docker compose down
 compose設定ではホスト側 `3001` 番に公開します。
 
 ```text
-http://<server-host>:3001/nyanta
-http://<server-host>:3001/nyanta/medical
-http://<server-host>:3001/nyanta/smalltalk
-http://<server-host>:3001/nyanta/mood
-http://<server-host>:3001/nyanta/secret
+http://<server-host>:3001/nyanko
+http://<server-host>:3001/nyanko/medical
+http://<server-host>:3001/nyanko/smalltalk
+http://<server-host>:3001/nyanko/mood
+http://<server-host>:3001/nyanko/secret
 
 # BASE_PATH=/ の場合
 http://<server-host>:3001/

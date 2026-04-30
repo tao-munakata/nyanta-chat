@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import NyantaFace, {
+import NyankoFace, {
   type CharacterVersion,
   type Expression,
-} from "@/components/NyantaFace";
+} from "@/components/NyankoFace";
 import ChatBubble from "@/components/ChatBubble";
 import ProgressBar from "@/components/ProgressBar";
 import InputArea from "@/components/InputArea";
@@ -15,16 +15,16 @@ import { APP_VERSION } from "@/lib/version";
 import { withBasePath } from "@/lib/paths";
 
 type Message = {
-  role: "nyanta" | "user";
+  role: "nyanko" | "user";
   text: string;
   expression?: Expression;
   version?: CharacterVersion;
 };
 
 const WELCOME_MESSAGE =
-  "こんにゃちはにゃん！🐾 今日はおうちでお医者さんに来てもらうお話にゃ？\n緊張してるかもだけど、にゃん太が一緒に優しく聞くにゃ♡\n一緒に答えていこっか！";
+  "こんにゃちはにゃん！🐾 今日はおうちでお医者さんに来てもらうお話にゃ？\n緊張してるかもだけど、にゃんこが一緒に優しく聞くにゃ♡\n一緒に答えていこっか！";
 
-const SESSION_STORAGE_KEY = "nyanta-medical-current-session";
+const SESSION_STORAGE_KEY = "nyanko-medical-current-session";
 
 const CHARACTER_BY_CATEGORY: Record<string, CharacterVersion> = {
   basic: "doctor",
@@ -147,7 +147,7 @@ export default function ChatPage() {
   const [questions, setQuestions] = useState<Question[]>(QUESTIONS);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
+    { role: "nyanko", text: WELCOME_MESSAGE, expression: "welcome" },
   ]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expression, setExpression] = useState<Expression>("welcome");
@@ -166,7 +166,7 @@ export default function ChatPage() {
         setMessages([
           ...currentMessages,
           {
-            role: "nyanta",
+            role: "nyanko",
             text: currentQuestions[questionIndex].text,
             expression: "welcome",
             version: getCharacterVersion(currentQuestions, questionIndex),
@@ -190,7 +190,7 @@ export default function ChatPage() {
       window.localStorage.setItem(SESSION_STORAGE_KEY, data.sessionId);
       setSessionId(data.sessionId);
       showQuestion(0, [
-        { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
+        { role: "nyanko", text: WELCOME_MESSAGE, expression: "welcome" },
       ], currentQuestions);
     };
 
@@ -217,9 +217,9 @@ export default function ChatPage() {
               currentQuestions.length - 1
             );
             const resumedMessages: Message[] = [
-              { role: "nyanta", text: WELCOME_MESSAGE, expression: "welcome" },
+              { role: "nyanko", text: WELCOME_MESSAGE, expression: "welcome" },
               {
-                role: "nyanta",
+                role: "nyanko",
                 text: "前回の続きから再開するにゃ。保存していたところから進めるにゃん♡",
                 expression: "encouraging",
                 version: getCharacterVersion(currentQuestions, nextIndex),
@@ -316,7 +316,7 @@ export default function ChatPage() {
     setMessages((prev) => [
       ...prev,
       {
-            role: "nyanta",
+            role: "nyanko",
             text: reaction,
             expression: nextExpression,
             version: getCharacterVersion(questions, currentIndex),
@@ -336,7 +336,7 @@ export default function ChatPage() {
         setMessages((prev) => [
           ...prev,
           {
-            role: "nyanta",
+            role: "nyanko",
             text: "全部答えてくれてありがとうにゃ♡ これでお医者さんがスムーズに来られるにゃ〜！🐾 まとめを見てにゃん！",
             expression: "encouraging",
             version: "cream",
@@ -345,7 +345,7 @@ export default function ChatPage() {
         setExpression("encouraging");
       }, 500);
       setTimeout(() => {
-        // basePath('/nyanta')はNext.js routerが自動付与するため不要
+        // basePath('/nyanko')はNext.js routerが自動付与するため不要
         router.push(`/medical/complete?session=${sessionId}`);
       }, 3000);
     } else {
@@ -354,7 +354,7 @@ export default function ChatPage() {
         setMessages((prev) => [
           ...prev,
           {
-            role: "nyanta",
+            role: "nyanko",
             text: questions[nextIndex].text,
             expression: "welcome",
             version: getCharacterVersion(questions, nextIndex),
@@ -461,14 +461,14 @@ export default function ChatPage() {
       {/* ヘッダー */}
       <header className="bg-white border-b border-pink-100 px-4 py-3 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-3">
-          <NyantaFace
+          <NyankoFace
             expression={expression}
             version={currentCharacterVersion}
             size={48}
           />
           <div className="flex-1">
             <div className="flex items-center justify-between gap-2">
-              <h1 className="text-base font-bold text-pink-600">nyanta-medical 問診票</h1>
+              <h1 className="text-base font-bold text-pink-600">nyanko-medical 問診票</h1>
               <div className="flex items-center gap-2">
                 <Link
                   href="/medical/questions"
@@ -515,7 +515,7 @@ export default function ChatPage() {
             disabled={disabled}
           />
           <p className="text-center text-xs text-slate-400 pb-3 px-4">
-            ※ これはにゃん太先生のお手伝いにゃ。本当の診断は訪問のお医者さんにお任せしてね！
+            ※ これはにゃんこ先生のお手伝いにゃ。本当の診断は訪問のお医者さんにお任せしてね！
           </p>
         </footer>
       )}

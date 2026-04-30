@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import NyantaFace from "@/components/NyantaFace";
+import NyankoFace from "@/components/NyankoFace";
 import { APP_VERSION } from "@/lib/version";
 import { CATEGORIES, QUESTIONS, type Question } from "@/lib/questions";
 import { withBasePath } from "@/lib/paths";
@@ -73,7 +73,7 @@ export default function QuestionsPage() {
   return (
     <div className="min-h-screen bg-pink-50 max-w-lg mx-auto">
       <header className="bg-white border-b border-pink-100 px-4 py-4 text-center">
-        <NyantaFace expression="thinking" version="doctor" size={64} />
+        <NyankoFace expression="thinking" version="doctor" size={64} />
         <h1 className="mt-2 text-xl font-bold text-pink-600">質問編集ページ</h1>
         <p className="mt-1 text-[10px] font-semibold text-pink-400">
           {APP_VERSION}

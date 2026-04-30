@@ -1,16 +1,16 @@
 services:
-  nyanta:
+  nyanko:
     build:
       context: .
       args:
-        BASE_PATH: ${BASE_PATH:-/nyanta}
-    container_name: nyanta_chat
+        BASE_PATH: ${BASE_PATH:-/nyanko}
+    container_name: nyanko_chat
     environment:
       - NODE_ENV=production
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - BASE_PATH=${BASE_PATH:-/nyanta}
-      - NEXT_PUBLIC_BASE_PATH=${BASE_PATH:-/nyanta}
-      - DB_PATH=/app/data/nyanta.db
+      - BASE_PATH=${BASE_PATH:-/nyanko}
+      - NEXT_PUBLIC_BASE_PATH=${BASE_PATH:-/nyanko}
+      - DB_PATH=/app/data/nyanko.db
     volumes:
       - ./data:/app/data
     ports:

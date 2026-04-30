@@ -145,7 +145,7 @@ const VERSIONS: Record<
   },
 };
 
-export default function NyantaFace({
+export default function NyankoFace({
   expression,
   size = 80,
   version = "doctor",
@@ -168,8 +168,8 @@ export default function NyantaFace({
       height={size}
       viewBox="0 0 88 88"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label={`にゃん太先生 ${expression}`}
-      className={animate ? "nyanta-face" : undefined}
+      aria-label={`にゃんこ先生 ${expression}`}
+      className={animate ? "nyanko-face" : undefined}
     >
       {/* 白衣の体 */}
       <rect x="22" y="68" width="44" height="16" rx="8" fill="white" stroke="#ddd" strokeWidth="1.5" />
@@ -239,17 +239,17 @@ export default function NyantaFace({
         <path d={face.eyebrows} {...strokeProps} strokeWidth={2} />
       )}
       <path
-        className={animate ? "nyanta-eye nyanta-eye-left" : undefined}
+        className={animate ? "nyanko-eye nyanko-eye-left" : undefined}
         d={face.leftEye}
         {...strokeProps}
       />
       <path
-        className={animate ? "nyanta-eye nyanta-eye-right" : undefined}
+        className={animate ? "nyanko-eye nyanko-eye-right" : undefined}
         d={face.rightEye}
         {...strokeProps}
       />
       <path
-        className={speaking ? "nyanta-mouth nyanta-mouth-speaking" : "nyanta-mouth"}
+        className={speaking ? "nyanko-mouth nyanko-mouth-speaking" : "nyanko-mouth"}
         d={face.mouth}
         {...strokeProps}
       />

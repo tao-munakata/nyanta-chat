@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ChatBubble from "@/components/ChatBubble";
-import NyantaFace, { type Expression } from "@/components/NyantaFace";
+import NyankoFace, { type Expression } from "@/components/NyankoFace";
 import type { ServiceConfig } from "@/lib/services";
 import { APP_VERSION } from "@/lib/version";
 import { withBasePath } from "@/lib/paths";
 
 type Message = {
-  role: "nyanta" | "user";
+  role: "nyanko" | "user";
   text: string;
   expression?: Expression;
 };
@@ -21,7 +21,7 @@ type Props = {
 export default function FreeChatPage({ service }: Props) {
   const [messages, setMessages] = useState<Message[]>([
     {
-      role: "nyanta",
+      role: "nyanko",
       text: service.welcomeMessage,
       expression: service.expression,
     },
@@ -67,7 +67,7 @@ export default function FreeChatPage({ service }: Props) {
       setMessages((prev) => [
         ...prev,
         {
-          role: "nyanta",
+          role: "nyanko",
           text: data.reaction,
           expression: data.expression,
         },
@@ -77,7 +77,7 @@ export default function FreeChatPage({ service }: Props) {
       setMessages((prev) => [
         ...prev,
         {
-          role: "nyanta",
+          role: "nyanko",
           text: service.fallbackReaction,
           expression: service.expression,
         },
@@ -92,7 +92,7 @@ export default function FreeChatPage({ service }: Props) {
     <div className={`min-h-screen ${service.bgClass} flex flex-col max-w-lg mx-auto`}>
       <header className={`sticky top-0 z-10 border-b ${service.borderClass} bg-white px-4 py-3 shadow-sm`}>
         <div className="flex items-center gap-3">
-          <NyantaFace
+          <NyankoFace
             expression={expression}
             version={service.character}
             size={52}

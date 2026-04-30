@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm ci --frozen-lockfile
 
 COPY . .
-ARG BASE_PATH=/nyanta
+ARG BASE_PATH=/nyanko
 ENV BASE_PATH=${BASE_PATH}
 ENV NEXT_PUBLIC_BASE_PATH=${BASE_PATH}
 ENV NEXT_PRIVATE_STANDALONE=true
@@ -25,7 +25,7 @@ RUN apk add --no-cache libc6-compat
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ARG BASE_PATH=/nyanta
+ARG BASE_PATH=/nyanko
 ENV BASE_PATH=${BASE_PATH}
 ENV NEXT_PUBLIC_BASE_PATH=${BASE_PATH}
 

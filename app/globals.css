@@ -25,29 +25,29 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.nyanta-eye,
-.nyanta-mouth {
+.nyanko-eye,
+.nyanko-mouth {
   transform-box: fill-box;
   transform-origin: center;
 }
 
-.nyanta-eye-left {
-  animation: nyanta-blink 5.8s ease-in-out infinite;
+.nyanko-eye-left {
+  animation: nyanko-blink 5.8s ease-in-out infinite;
 }
 
-.nyanta-eye-right {
-  animation: nyanta-blink 5.8s ease-in-out 0.05s infinite;
+.nyanko-eye-right {
+  animation: nyanko-blink 5.8s ease-in-out 0.05s infinite;
 }
 
-.nyanta-mouth-speaking {
-  animation: nyanta-talk 0.72s ease-in-out infinite;
+.nyanko-mouth-speaking {
+  animation: nyanko-talk 0.72s ease-in-out infinite;
 }
 
-.nyanta-face {
-  animation: nyanta-breathe 4.8s ease-in-out infinite;
+.nyanko-face {
+  animation: nyanko-breathe 4.8s ease-in-out infinite;
 }
 
-@keyframes nyanta-blink {
+@keyframes nyanko-blink {
   0%,
   92%,
   100% {
@@ -59,7 +59,7 @@ body {
   }
 }
 
-@keyframes nyanta-talk {
+@keyframes nyanko-talk {
   0%,
   100% {
     transform: scaleY(0.75);
@@ -72,7 +72,7 @@ body {
   }
 }
 
-@keyframes nyanta-breathe {
+@keyframes nyanko-breathe {
   0%,
   100% {
     transform: translateY(0);
@@ -83,10 +83,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nyanta-face,
-  .nyanta-eye-left,
-  .nyanta-eye-right,
-  .nyanta-mouth-speaking {
+  .nyanko-face,
+  .nyanko-eye-left,
+  .nyanko-eye-right,
+  .nyanko-mouth-speaking {
     animation: none;
   }
 }

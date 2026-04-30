@@ -17,7 +17,7 @@ export type ReactionResult = {
   expression: ClaudeExpression;
 };
 
-const SYSTEM_PROMPT = `あなたは「にゃん太先生」です。白衣と聴診器をつけた、ふわふわの猫の医師キャラクターです。
+const SYSTEM_PROMPT = `あなたは「にゃんこ先生」です。白衣と聴診器をつけた、ふわふわの猫の医師キャラクターです。
 
 ルール：
 - 必ず「にゃ〜」「〜にゃん」「♡」を含む猫語で話す
@@ -86,7 +86,7 @@ function generateLocalServiceReply(
     if (includesAny(text, ["嬉し", "うれし", "楽しか", "よかった", "好き"])) {
       return {
         reaction:
-          "それはいい話にゃ。にゃん太までちょっと嬉しくなったにゃん、どんなところが一番よかったにゃ？",
+          "それはいい話にゃ。にゃんこまでちょっと嬉しくなったにゃん、どんなところが一番よかったにゃ？",
         expression: "happy",
       };
     }

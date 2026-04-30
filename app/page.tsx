@@ -1,5 +1,5 @@
 import Link from "next/link";
-import NyantaFace from "@/components/NyantaFace";
+import NyankoFace from "@/components/NyankoFace";
 import { SERVICE_LIST } from "@/lib/services";
 import { APP_VERSION } from "@/lib/version";
 
@@ -8,13 +8,13 @@ export default function ServiceHomePage() {
     <div className="min-h-screen bg-slate-50 max-w-lg mx-auto">
       <header className="border-b border-slate-200 bg-white px-4 py-5">
         <div className="flex items-center gap-3">
-          <NyantaFace expression="happy" version="pink" size={64} />
+          <NyankoFace expression="happy" version="pink" size={64} />
           <div>
             <p className="text-[11px] font-bold uppercase text-pink-400">
-              Nyanta Services
+              Nyanko Services
             </p>
             <h1 className="text-xl font-bold text-slate-800">
-              にゃん太チャット
+              にゃんこチャット
             </h1>
             <p className="mt-1 text-xs font-semibold text-slate-400">
               {APP_VERSION}
@@ -22,7 +22,7 @@ export default function ServiceHomePage() {
           </div>
         </div>
         <p className="mt-4 text-sm leading-6 text-slate-600">
-          目的に合わせて、にゃん太の会話テーマを切り替えられます。
+          目的に合わせて、にゃんこの会話テーマを切り替えられます。
           まずは同じVPSで動作確認し、あとからサービスごとに切り出せる構成です。
         </p>
       </header>
@@ -35,7 +35,7 @@ export default function ServiceHomePage() {
             className={`rounded-2xl border ${service.borderClass} bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md`}
           >
             <div className="flex items-center gap-3">
-              <NyantaFace
+              <NyankoFace
                 expression={service.expression}
                 version={service.character}
                 size={52}

@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 
 const DB_PATH =
-  process.env.DB_PATH ?? path.join(process.cwd(), "data/nyanta.db");
+  process.env.DB_PATH ?? path.join(process.cwd(), "data/nyanko.db");
 
 let _db: Database.Database | null = null;
 

@@ -1,10 +1,10 @@
-import NyantaFace, {
+import NyankoFace, {
   type CharacterVersion,
   type Expression,
-} from "@/components/NyantaFace";
+} from "@/components/NyankoFace";
 
 type Props = {
-  role: "nyanta" | "user";
+  role: "nyanko" | "user";
   text: string;
   expression?: Expression;
   version?: CharacterVersion;
@@ -16,12 +16,12 @@ export default function ChatBubble({
   expression = "welcome",
   version = "doctor",
 }: Props) {
-  if (role === "nyanta") {
+  if (role === "nyanko") {
     return (
       <div className="flex items-end gap-3 max-w-[90%]">
         {/* 猫イラスト */}
         <div className="flex-shrink-0 drop-shadow-sm">
-          <NyantaFace
+          <NyankoFace
             expression={expression}
             version={version}
             size={64}

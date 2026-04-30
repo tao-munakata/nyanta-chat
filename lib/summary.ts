@@ -173,7 +173,7 @@ export function buildVisitSummaryCard(
     .join(" / ");
 
   return {
-    headline: `${mainConcern}。にゃん太が訪問前に気になった点をまとめたにゃ。`,
+    headline: `${mainConcern}。にゃんこが訪問前に気になった点をまとめたにゃ。`,
     sections: [
       {
         title: "主な相談",

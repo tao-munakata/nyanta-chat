@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   return new Response(`\uFEFF${csv}`, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="nyanta-answers-${sessionId}.csv"`,
+      "Content-Disposition": `attachment; filename="nyanko-answers-${sessionId}.csv"`,
     },
   });
 }

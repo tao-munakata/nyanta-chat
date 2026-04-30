@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "にゃん太チャット",
+  title: "にゃんこチャット",
   description: "問診、雑談、気持ち整理、匿名相談を切り替えられる猫チャット",
 };
 

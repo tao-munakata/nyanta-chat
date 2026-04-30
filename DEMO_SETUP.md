@@ -1,6 +1,6 @@
-# にゃん太先生チャット デモ配布版セットアップ
+# にゃんこ先生チャット デモ配布版セットアップ
 
-このフォルダは、にゃん太先生チャットのデモ用配布パッケージです。Dockerが入っているUbuntuサーバ、VPS、またはDocker対応環境で起動できます。
+このフォルダは、にゃんこ先生チャットのデモ用配布パッケージです。Dockerが入っているUbuntuサーバ、VPS、またはDocker対応環境で起動できます。
 
 ## 必要なもの
 
@@ -15,8 +15,8 @@ APIキーが未設定でも画面操作はできますが、AIリアクション
 圧縮ファイルをサーバへ置いて展開します。
 
 ```bash
-tar xzf nyanta-chat-demo-*.tar.gz
-cd nyanta-chat
+tar xzf nyanko-chat-demo-*.tar.gz
+cd nyanko-chat
 ```
 
 環境変数ファイルを作ります。
@@ -29,7 +29,7 @@ cp .env.example .env
 
 ```env
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
-DB_PATH=./data/nyanta.db
+DB_PATH=./data/nyanko.db
 ```
 
 起動します。
@@ -42,7 +42,7 @@ docker compose up -d --build
 ブラウザで開きます。
 
 ```text
-http://サーバのIPまたはドメイン:3001/nyanta
+http://サーバのIPまたはドメイン:3001/nyanko
 ```
 
 ## 停止
@@ -64,7 +64,7 @@ docker compose up -d --build
 回答データはSQLiteで保存されます。
 
 ```text
-./data/nyanta.db
+./data/nyanko.db
 ```
 
 この `data/` フォルダを削除すると、保存済み回答も消えます。

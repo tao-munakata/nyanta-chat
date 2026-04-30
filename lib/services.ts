@@ -1,4 +1,4 @@
-import type { CharacterVersion, Expression } from "@/components/NyantaFace";
+import type { CharacterVersion, Expression } from "@/components/NyankoFace";
 
 export type ServiceId = "medical" | "smalltalk" | "mood" | "secret";
 
@@ -29,7 +29,7 @@ export const SERVICES: Record<ServiceId, ServiceConfig> = {
   medical: {
     id: "medical",
     slug: "/medical",
-    name: "nyanta-medical",
+    name: "nyanko-medical",
     shortName: "問診票",
     description: "訪問診療前に、先生へ伝えたいことを猫と一緒に整理します。",
     entryLabel: "問診を始める",
@@ -51,7 +51,7 @@ export const SERVICES: Record<ServiceId, ServiceConfig> = {
   smalltalk: {
     id: "smalltalk",
     slug: "/smalltalk",
-    name: "nyanta-smalltalk",
+    name: "nyanko-smalltalk",
     shortName: "雑談",
     description: "かわいい猫の顔を見ながら、何気ない話をゆるく楽しめます。",
     entryLabel: "雑談する",
@@ -64,11 +64,11 @@ export const SERVICES: Record<ServiceId, ServiceConfig> = {
     character: "tabby",
     expression: "happy",
     welcomeMessage:
-      "やっほーにゃ。今日はどんなことを話すにゃ？たわいもない話でも、にゃん太はうれしいにゃん。",
+      "やっほーにゃ。今日はどんなことを話すにゃ？たわいもない話でも、にゃんこはうれしいにゃん。",
     placeholder: "今日あったこと、好きなこと、なんでもどうぞ",
     disclaimer: "雑談用の猫チャットです。重要な判断が必要な内容は専門家に相談してください。",
     quickReplies: ["今日ちょっと疲れた", "最近うれしかったことを聞いて", "眠る前に少し話したい"],
-    systemPrompt: `あなたは「にゃん太」です。かわいい猫の顔で寄り添う雑談相手です。
+    systemPrompt: `あなたは「にゃんこ」です。かわいい猫の顔で寄り添う雑談相手です。
 
 ルール：
 - 1〜3文で短く、自然でやさしく返す
@@ -81,7 +81,7 @@ export const SERVICES: Record<ServiceId, ServiceConfig> = {
   mood: {
     id: "mood",
     slug: "/mood",
-    name: "nyanta-mood",
+    name: "nyanko-mood",
     shortName: "気持ち整理",
     description: "落ち込みや不安を責めずに受け止め、少し前向きな視点へ導きます。",
     entryLabel: "気持ちを整理する",
@@ -99,7 +99,7 @@ export const SERVICES: Record<ServiceId, ServiceConfig> = {
     disclaimer:
       "こころの整理を助けるチャットです。つらさが強い時や危険を感じる時は、身近な人や専門窓口へ相談してください。",
     quickReplies: ["何もやる気が出ない", "自分を責めてしまう", "少しだけ前向きになりたい"],
-    systemPrompt: `あなたは「にゃん太」です。落ち込みや不安を抱えた人の気持ちを、やさしく整理する猫の聞き役です。
+    systemPrompt: `あなたは「にゃんこ」です。落ち込みや不安を抱えた人の気持ちを、やさしく整理する猫の聞き役です。
 
 ルール：
 - 診断、治療、服薬指示はしない
@@ -113,7 +113,7 @@ export const SERVICES: Record<ServiceId, ServiceConfig> = {
   secret: {
     id: "secret",
     slug: "/secret",
-    name: "nyanta-secret",
+    name: "nyanko-secret",
     shortName: "匿名相談",
     description: "人には言いにくい話を、猫を相手に匿名で整理できます。",
     entryLabel: "匿名で話す",
@@ -131,7 +131,7 @@ export const SERVICES: Record<ServiceId, ServiceConfig> = {
     disclaimer:
       "匿名相談の試作版です。個人を特定できる情報は入力しないでください。緊急時は公的窓口や専門家に相談してください。",
     quickReplies: ["誰にも言えない悩みがある", "関係を壊さずに伝えたい", "匿名で気持ちを整理したい"],
-    systemPrompt: `あなたは「にゃん太」です。匿名で話したい人の相談を受け止め、相手が安全に言葉を整理できるよう助ける猫です。
+    systemPrompt: `あなたは「にゃんこ」です。匿名で話したい人の相談を受け止め、相手が安全に言葉を整理できるよう助ける猫です。
 
 ルール：
 - 個人情報の入力を求めない
