@@ -4,6 +4,7 @@ import { buildAnswersCsv, buildCsvRows } from "@/lib/csv";
 import { applyQuestionOverrides, QUESTIONS } from "@/lib/questions";
 import { APP_VERSION } from "@/lib/version";
 import CsvCopyButton from "@/components/CsvCopyButton";
+import { withBasePath } from "@/lib/paths";
 
 type Props = { searchParams: Promise<{ session?: string }> };
 
@@ -21,7 +22,7 @@ export default async function CsvPage({ searchParams }: Props) {
   const rows = buildCsvRows(answerMap, questions);
   const csv = buildAnswersCsv(rows);
   const downloadHref = sessionId
-    ? `/nyanta/api/session/csv?session=${encodeURIComponent(sessionId)}`
+    ? withBasePath(`/api/session/csv?session=${encodeURIComponent(sessionId)}`)
     : "/medical";
 
   return (

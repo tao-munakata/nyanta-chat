@@ -9,6 +9,9 @@ COPY package*.json ./
 RUN npm ci --frozen-lockfile
 
 COPY . .
+ARG BASE_PATH=/nyanta
+ENV BASE_PATH=${BASE_PATH}
+ENV NEXT_PUBLIC_BASE_PATH=${BASE_PATH}
 ENV NEXT_PRIVATE_STANDALONE=true
 RUN npm run build
 
@@ -22,6 +25,9 @@ RUN apk add --no-cache libc6-compat
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ARG BASE_PATH=/nyanta
+ENV BASE_PATH=${BASE_PATH}
+ENV NEXT_PUBLIC_BASE_PATH=${BASE_PATH}
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

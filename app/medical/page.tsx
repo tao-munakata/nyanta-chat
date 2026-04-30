@@ -12,6 +12,7 @@ import ProgressBar from "@/components/ProgressBar";
 import InputArea from "@/components/InputArea";
 import { QUESTIONS, type Question } from "@/lib/questions";
 import { APP_VERSION } from "@/lib/version";
+import { withBasePath } from "@/lib/paths";
 
 type Message = {
   role: "nyanta" | "user";
@@ -175,7 +176,7 @@ export default function ChatPage() {
     };
 
     const loadQuestions = async (): Promise<Question[]> => {
-      const response = await fetch("/nyanta/api/questions");
+      const response = await fetch(withBasePath("/api/questions"));
       if (!response.ok) return QUESTIONS;
 
       const data = (await response.json()) as { questions: Question[] };
@@ -184,7 +185,7 @@ export default function ChatPage() {
     };
 
     const createNewSession = async (currentQuestions: Question[]) => {
-      const response = await fetch("/nyanta/api/session", { method: "POST" });
+      const response = await fetch(withBasePath("/api/session"), { method: "POST" });
       const data = (await response.json()) as { sessionId: string };
       window.localStorage.setItem(SESSION_STORAGE_KEY, data.sessionId);
       setSessionId(data.sessionId);
@@ -199,7 +200,7 @@ export default function ChatPage() {
 
       if (storedSessionId) {
         const response = await fetch(
-          `/nyanta/api/session?session=${storedSessionId}`
+          withBasePath(`/api/session?session=${storedSessionId}`)
         );
 
         if (response.ok) {
@@ -279,7 +280,7 @@ export default function ChatPage() {
 
     // 回答を保存（スキップ時は空文字を保存）
     window.localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
-    await fetch("/nyanta/api/session", {
+    await fetch(withBasePath("/api/session"), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -295,7 +296,7 @@ export default function ChatPage() {
     let nextExpression: Expression = "happy";
 
     if (answer !== "") {
-      const res = await fetch("/nyanta/api/chat", {
+      const res = await fetch(withBasePath("/api/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -325,7 +326,7 @@ export default function ChatPage() {
 
     if (isLast) {
       // 完了処理
-      await fetch("/nyanta/api/session", {
+      await fetch(withBasePath("/api/session"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "complete", sessionId }),
@@ -376,7 +377,7 @@ export default function ChatPage() {
 
     const previousIndex = currentIndex - 1;
     if (sessionId) {
-      fetch("/nyanta/api/session", {
+      fetch(withBasePath("/api/session"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

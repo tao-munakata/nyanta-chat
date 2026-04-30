@@ -9,12 +9,12 @@
 - Database: SQLite (`better-sqlite3`)
 - AI reaction: Anthropic Claude API
 - Runtime: Docker / Node.js
-- Production path: `/nyanta`
-- Service paths: `/nyanta/medical`, `/nyanta/smalltalk`, `/nyanta/mood`, `/nyanta/secret`
+- Production path: configurable with `BASE_PATH` (`/nyanta` by default, `/` for root-domain deployment)
+- Service paths: `/medical`, `/smalltalk`, `/mood`, `/secret` when `BASE_PATH=/`; `/nyanta/medical`, `/nyanta/smalltalk`, `/nyanta/mood`, `/nyanta/secret` when `BASE_PATH=/nyanta`
 
 ## 主な機能
 
-- `/nyanta` でサービス一覧を表示
+- ルートまたは `BASE_PATH` でサービス一覧を表示
 - `nyanta-medical`: 問診質問25問、7カテゴリ
 - `nyanta-smalltalk`: 猫の顔を見ながら雑談できる自由チャット
 - `nyanta-mood`: 落ち込みや不安をやさしく整理する自由チャット
@@ -63,6 +63,8 @@ cp .env.example .env
 ```env
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 DB_PATH=./data/nyanta.db
+BASE_PATH=/nyanta
+HOST_PORT=3001
 ```
 
 ## ローカル開発
@@ -82,6 +84,13 @@ http://localhost:3000/nyanta/medical
 http://localhost:3000/nyanta/smalltalk
 http://localhost:3000/nyanta/mood
 http://localhost:3000/nyanta/secret
+
+# BASE_PATH=/ の場合
+http://localhost:3000/
+http://localhost:3000/medical
+http://localhost:3000/smalltalk
+http://localhost:3000/mood
+http://localhost:3000/secret
 ```
 
 ## Dockerでの起動
@@ -104,7 +113,7 @@ docker compose logs -f
 docker compose down
 ```
 
-現在の `docker-compose.yml` はホスト側 `3001` 番ポートをコンテナの `3000` 番へ割り当てます。
+現在の `docker-compose.yml` は `HOST_PORT` で公開ポートを変更できます。未指定時はホスト側 `3001` 番ポートをコンテナの `3000` 番へ割り当てます。
 
 ```text
 http://localhost:3001/nyanta
@@ -112,6 +121,13 @@ http://localhost:3001/nyanta/medical
 http://localhost:3001/nyanta/smalltalk
 http://localhost:3001/nyanta/mood
 http://localhost:3001/nyanta/secret
+
+# BASE_PATH=/ の場合
+http://localhost:3001/
+http://localhost:3001/medical
+http://localhost:3001/smalltalk
+http://localhost:3001/mood
+http://localhost:3001/secret
 ```
 
 ## デモ配布パッケージ

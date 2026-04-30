@@ -18,6 +18,8 @@ data/
 ```env
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 DB_PATH=./data/nyanta.db
+BASE_PATH=/nyanta
+HOST_PORT=3001
 ```
 
 ## 初回デプロイ
@@ -79,9 +81,16 @@ http://<server-host>:3001/nyanta/medical
 http://<server-host>:3001/nyanta/smalltalk
 http://<server-host>:3001/nyanta/mood
 http://<server-host>:3001/nyanta/secret
+
+# BASE_PATH=/ の場合
+http://<server-host>:3001/
+http://<server-host>:3001/medical
+http://<server-host>:3001/smalltalk
+http://<server-host>:3001/mood
+http://<server-host>:3001/secret
 ```
 
-リバースプロキシを使う場合も、アプリ側のbasePathは `/nyanta` です。
+`BASE_PATH` を `/` にするとルートドメインでサービス一覧と4サービスを個別URLで動かせます。
 
 ## 注意点
 

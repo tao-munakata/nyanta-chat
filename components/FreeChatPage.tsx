@@ -6,6 +6,7 @@ import ChatBubble from "@/components/ChatBubble";
 import NyantaFace, { type Expression } from "@/components/NyantaFace";
 import type { ServiceConfig } from "@/lib/services";
 import { APP_VERSION } from "@/lib/version";
+import { withBasePath } from "@/lib/paths";
 
 type Message = {
   role: "nyanta" | "user";
@@ -51,7 +52,7 @@ export default function FreeChatPage({ service }: Props) {
     setExpression("thinking");
 
     try {
-      const response = await fetch("/nyanta/api/chat", {
+      const response = await fetch(withBasePath("/api/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

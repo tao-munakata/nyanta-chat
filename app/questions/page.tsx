@@ -5,6 +5,7 @@ import Link from "next/link";
 import NyantaFace from "@/components/NyantaFace";
 import { APP_VERSION } from "@/lib/version";
 import { CATEGORIES, QUESTIONS, type Question } from "@/lib/questions";
+import { withBasePath } from "@/lib/paths";
 
 type QuestionApiResponse = {
   questions: Question[];
@@ -19,7 +20,7 @@ export default function QuestionsPage() {
 
   useEffect(() => {
     const loadQuestions = async () => {
-      const response = await fetch("/nyanta/api/questions");
+      const response = await fetch(withBasePath("/api/questions"));
       if (!response.ok) return;
 
       const data = (await response.json()) as QuestionApiResponse;
@@ -45,7 +46,7 @@ export default function QuestionsPage() {
     setSavingId(questionId);
     setMessage(null);
 
-    const response = await fetch("/nyanta/api/questions", {
+    const response = await fetch(withBasePath("/api/questions"), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
