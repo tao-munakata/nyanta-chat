@@ -7,6 +7,7 @@ import {
   getSessionAnswers,
   saveAnswer,
 } from "@/lib/db";
+import { normalizeAnswerForStorage } from "@/lib/answerNormalization";
 
 // GET: 既存セッションを取得
 export async function GET(request: Request) {
@@ -43,7 +44,11 @@ export async function PUT(request: Request) {
       questionId: string;
       answer: string;
     };
-    saveAnswer(sessionId, questionId, answer);
+    saveAnswer(
+      sessionId,
+      questionId,
+      normalizeAnswerForStorage(questionId, answer)
+    );
     return NextResponse.json({ ok: true });
   }
 

@@ -13,6 +13,7 @@ import InputArea from "@/components/InputArea";
 import { QUESTIONS, type Question } from "@/lib/questions";
 import { APP_VERSION } from "@/lib/version";
 import { withBasePath } from "@/lib/paths";
+import { normalizeAnswerForStorage } from "@/lib/answerNormalization";
 
 type Message = {
   role: "nyanko" | "user";
@@ -250,10 +251,11 @@ export default function ChatPage() {
   const handleAnswer = async (answer: string): Promise<boolean> => {
     if (!sessionId) return false;
     const question = questions[currentIndex];
+    const storageAnswer = normalizeAnswerForStorage(question.id, answer);
     setInputError(null);
 
     if (question.id === "basic-dob") {
-      const birthDateError = validateBirthDate(answer);
+      const birthDateError = validateBirthDate(storageAnswer);
       if (birthDateError) {
         setInputError(birthDateError);
         setExpression("serious");
@@ -262,7 +264,7 @@ export default function ChatPage() {
     }
 
     if (question.id === "basic-phone") {
-      const phoneError = validatePhoneNumber(answer);
+      const phoneError = validatePhoneNumber(storageAnswer);
       if (phoneError) {
         setInputError(phoneError);
         setExpression("serious");
@@ -287,7 +289,7 @@ export default function ChatPage() {
         action: "save_answer",
         sessionId,
         questionId: question.id,
-        answer,
+        answer: storageAnswer,
       }),
     });
 
